@@ -1,120 +1,167 @@
-import React from 'react';
+﻿import React from 'react';
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
-import { clearAuth, getAuth } from '../auth';
 
-export function TopNav() {
-  const { user } = getAuth();
+function getStoredUser() {
+  try {
+    return JSON.parse(localStorage.getItem('user') || 'null');
+  } catch {
+    return null;
+  }
+}
+
+export default function AppLayout() {
   const navigate = useNavigate();
+  const user = getStoredUser();
+
+  const role = user?.role || '';
+
+  const base =
+    role === 'ADMIN'
+      ? '/admin'
+      : role === 'TRABAJADOR'
+      ? '/worker'
+      : '/shop';
+
+  const adminLinks = [
+    ['Dashboard', `${base}/dashboard`],
+    ['Productos', `${base}/products`],
+    ['Categorías', `${base}/categories`],
+    ['Marcas', `${base}/brands`],
+    ['Proveedores', `${base}/suppliers`],
+    ['Inventario', `${base}/inventory`],
+    ['Movimientos', `${base}/movements`],
+    ['Alertas', `${base}/alerts`],
+    ['Pedidos', `${base}/orders`],
+    ['Pagos', `${base}/payments`],
+    ['Facturas', `${base}/invoices`],
+    ['Notificaciones', `${base}/notifications`]
+  ];
+
+  const workerLinks = [
+    ['Dashboard', `${base}/dashboard`],
+    ['Pedidos', `${base}/orders`],
+    ['Pagos', `${base}/payments`],
+    ['Facturas', `${base}/invoices`],
+    ['Notificaciones', `${base}/notifications`]
+  ];
+
+  const customerLinks = [
+    ['Inicio', '/'],
+    ['Catálogo', '/shop/products'],
+    ['Carrito', '/cart'],
+    ['Mis pedidos', '/orders'],
+    ['Mis facturas', '/my-invoices'],
+    ['Mi perfil', '/profile']
+  ];
+
+  const links =
+    role === 'ADMIN'
+      ? adminLinks
+      : role === 'TRABAJADOR'
+      ? workerLinks
+      : customerLinks;
+
+  function logout() {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    navigate('/login');
+  }
 
   return (
-    <header className="nav">
-      <div className="nav-inner">
-        <NavLink to="/" className="brand">
-          <span className="brand-badge">L</span>
-          <div>
-            <div>Licorería Pro</div>
-            <div className="small">Inventario + ventas</div>
+    <div
+      style={{
+        minHeight: '100vh',
+        display: 'grid',
+        gridTemplateColumns: '260px 1fr',
+        background: '#0f0f10',
+        color: '#f5f5f5'
+      }}
+    >
+      <aside
+        style={{
+          borderRight: '1px solid rgba(255,255,255,0.08)',
+          padding: '20px 16px',
+          background: '#131316'
+        }}
+      >
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 6,
+            marginBottom: 22
+          }}
+        >
+          <div style={{ fontSize: 20, fontWeight: 800 }}>Licorería Pro</div>
+          <div style={{ fontSize: 12, color: '#b8b8b8' }}>
+            Panel de gestión
           </div>
-        </NavLink>
+        </div>
 
-        <nav className="nav-links">
-          <NavLink to="/" className="nav-link">Inicio</NavLink>
-          <NavLink to="/shop/products" className="nav-link">Catálogo</NavLink>
-          {user?.role === 'CLIENTE' && <>
-            <NavLink to="/cart" className="nav-link">Carrito</NavLink>
-            <NavLink to="/orders" className="nav-link">Mis pedidos</NavLink>
-            <NavLink to="/invoices" className="nav-link">Mis facturas</NavLink>
-          </>}
-          {user?.role === 'ADMIN' && <NavLink to="/admin/dashboard" className="nav-link">Panel admin</NavLink>}
-          {user?.role === 'TRABAJADOR' && <NavLink to="/worker/dashboard" className="nav-link">Panel trabajador</NavLink>}
+        <nav
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 8
+          }}
+        >
+          {links.map(([label, to]) => (
+            <NavLink
+              key={to}
+              to={to}
+              className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}
+              style={({ isActive }) => ({
+                textDecoration: 'none',
+                color: isActive ? '#111' : '#f5f5f5',
+                background: isActive ? '#d4af37' : 'transparent',
+                border: '1px solid rgba(255,255,255,0.08)',
+                borderRadius: 12,
+                padding: '10px 12px',
+                fontWeight: 600
+              })}
+            >
+              {label}
+            </NavLink>
+          ))}
         </nav>
 
-        <div className="stack">
-          {!user ? (
-            <>
-              <NavLink to="/login" className="btn btn-outline">Ingresar</NavLink>
-              <NavLink to="/register" className="btn btn-primary">Crear cuenta</NavLink>
-            </>
-          ) : (
-            <>
-              <div className="small" style={{alignSelf:'center'}}>{user.firstName} {user.lastName} · {user.role}</div>
-              <button className="btn btn-outline" onClick={() => { clearAuth(); navigate('/login'); }}>Salir</button>
-            </>
-          )}
+        <div
+          style={{
+            marginTop: 24,
+            paddingTop: 16,
+            borderTop: '1px solid rgba(255,255,255,0.08)',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 12
+          }}
+        >
+          <div
+            className="small"
+            style={{ alignSelf: 'center', color: '#cfcfcf', textAlign: 'center' }}
+          >
+            {user?.firstName} {user?.lastName} · {user?.role}
+          </div>
+
+          <button
+            onClick={logout}
+            style={{
+              border: 'none',
+              background: '#26262b',
+              color: '#fff',
+              borderRadius: 12,
+              padding: '10px 12px',
+              cursor: 'pointer',
+              fontWeight: 700
+            }}
+          >
+            Cerrar sesión
+          </button>
         </div>
-      </div>
-    </header>
-  );
-}
+      </aside>
 
-export function InternalLayout({ role }) {
-  const { user } = getAuth();
-  const navigate = useNavigate();
-  const base = role === 'ADMIN' ? '/admin' : '/worker';
-  const menu = role === 'ADMIN'
-    ? [
-        ['Dashboard', `${base}/dashboard`],
-        ['Notificaciones', `${base}/notifications`],
-        ['Categorías', `${base}/categories`],
-        ['Marcas', `${base}/brands`],
-        ['Proveedores', `${base}/suppliers`],
-        ['Productos', `${base}/products`],
-        ['Movimientos', `${base}/movements`],
-        ['Alertas', `${base}/alerts`],
-        ['Pedidos', `${base}/orders`],
-        ['Pagos', `${base}/payments`],
-        ['Facturas', `${base}/invoices`]
-      ]
-    : [
-        ['Dashboard', `${base}/dashboard`],
-        ['Productos', `${base}/products`],
-        ['Movimientos', `${base}/movements`],
-        ['Alertas', `${base}/alerts`],
-        ['Pedidos', `${base}/orders`],
-        ['Pagos', `${base}/payments`],
-        ['Facturas', `${base}/invoices`]
-      ];
-
-  return (
-    <>
-      <header className="nav">
-        <div className="nav-inner">
-          <div className="brand">
-            <span className="brand-badge">{role === 'ADMIN' ? 'A' : 'T'}</span>
-            <div>
-              <div>{role === 'ADMIN' ? 'Panel Admin' : 'Panel Trabajador'}</div>
-              <div className="small">{user?.firstName} {user?.lastName}</div>
-            </div>
-          </div>
-          <div className="stack">
-            <button className="btn btn-outline" onClick={() => navigate('/')}>Ver tienda</button>
-            <button className="btn btn-danger" onClick={() => { clearAuth(); navigate('/login'); }}>Salir</button>
-          </div>
-        </div>
-      </header>
-      <div className="layout">
-        <aside className="sidebar">
-          <div className="menu">
-            {menu.map(([label, href]) => (
-              <NavLink key={href} to={href}>{label}</NavLink>
-            ))}
-          </div>
-        </aside>
-        <main className="main">
-          <Outlet />
-        </main>
-      </div>
-    </>
-  );
-}
-
-export function PublicLayout() {
-  return (
-    <>
-      <TopNav />
-      <main>
+      <main style={{ padding: 24 }}>
         <Outlet />
       </main>
-    </>
+    </div>
   );
 }

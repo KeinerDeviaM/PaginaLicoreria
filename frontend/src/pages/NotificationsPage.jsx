@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+﻿import React, { useEffect, useState } from 'react';
 import { api } from '../api';
 
 export default function NotificationsPage() {
@@ -6,9 +6,12 @@ export default function NotificationsPage() {
 
   async function load() {
     const { data } = await api.get('/notifications/admin');
-    setRows(data);
+    setRows(Array.isArray(data?.data) ? data.data : Array.isArray(data) ? data : []);
   }
-  useEffect(() => { load(); }, []);
+
+  useEffect(() => {
+    load();
+  }, []);
 
   async function read(id) {
     await api.patch(`/notifications/admin/${id}/read`);
@@ -22,25 +25,35 @@ export default function NotificationsPage() {
 
   return (
     <div className="page">
-      <div className="stack" style={{justifyContent:'space-between', alignItems:'center'}}>
+      <div className="stack" style={{ justifyContent: 'space-between', alignItems: 'center' }}>
         <div>
           <h1>Notificaciones</h1>
           <p className="small">Seguimiento de compras, pagos y facturas.</p>
         </div>
-        <button className="btn btn-primary" onClick={readAll}>Marcar todas como leídas</button>
+        <button className="btn btn-primary" onClick={readAll}>
+          Marcar todas como leídas
+        </button>
       </div>
+
       <div className="grid">
-        {rows.map(n => (
-          <article key={n.id} className="card" style={{opacity: n.read ? .7 : 1}}>
-            <div className="stack" style={{justifyContent:'space-between', alignItems:'start'}}>
+        {rows.map((n) => (
+          <article key={n.id} className="card" style={{ opacity: n.read ? 0.7 : 1 }}>
+            <div className="stack" style={{ justifyContent: 'space-between', alignItems: 'start' }}>
               <div>
                 <h3>{n.title}</h3>
                 <p>{n.message}</p>
-                <div className="small">Actor: {n.actorName} · {n.actorRole} · Ref: {n.referenceType} #{n.referenceId}</div>
+                <div className="small">
+                  Actor: {n.actorName} · {n.actorRole} · Ref: {n.referenceType} #{n.referenceId}
+                </div>
               </div>
-              <div className="small">{new Date(n.createdAt).toLocaleString()}</div>
+              <div className="small">{new Date(n.createdAt).toLocaleString('es-CO')}</div>
             </div>
-            {!n.read && <button className="btn btn-outline" onClick={()=>read(n.id)}>Marcar leída</button>}
+
+            {!n.read && (
+              <button className="btn btn-outline" onClick={() => read(n.id)}>
+                Marcar leída
+              </button>
+            )}
           </article>
         ))}
       </div>

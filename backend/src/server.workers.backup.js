@@ -1,4 +1,4 @@
-﻿const express = require('express');
+const express = require('express');
 const cors = require('cors');
 const { initDb, loadDb, saveDb, nextId, now } = require('./db');
 const { hashPassword, verifyPassword, signToken, verifyToken } = require('./auth');
@@ -26,7 +26,7 @@ function auth(req, res, next) {
   if (!payload) return res.status(401).json({ message: 'No autenticado' });
   const db = loadDb();
   const user = db.users.find(u => u.id === payload.id && u.active);
-  if (!user) return res.status(401).json({ message: 'Usuario invÃ¡lido' });
+  if (!user) return res.status(401).json({ message: 'Usuario invÃƒÂ¡lido' });
   req.user = user;
   req.db = db;
   next();
@@ -193,7 +193,7 @@ app.post('/api/auth/login', (req, res) => {
   const { email, password } = req.body;
   const user = db.users.find(u => u.email === String(email || '').toLowerCase());
   if (!user || !verifyPassword(password || '', user.passwordHash)) {
-    return res.status(401).json({ message: 'Credenciales invÃ¡lidas' });
+    return res.status(401).json({ message: 'Credenciales invÃƒÂ¡lidas' });
   }
   const token = signToken({ id: user.id, role: user.role, email: user.email });
   res.json({
@@ -207,6 +207,9 @@ app.post('/api/auth/login', (req, res) => {
   });
 });
 
+app.get('/api/auth/me', auth, (req, res) => {
+  res.json({ success: true, data: sanitizeUser(req.user) });
+});
 
 app.get('/api/shop/home', (_req, res) => {
   const db = loadDb();
@@ -265,7 +268,7 @@ function simpleCollectionRoutes(path, key, label) {
     res.json({ success: true, message: `${label} actualizado`, data: item });
   });
 }
-simpleCollectionRoutes('categories', 'categories', 'CategorÃ­a');
+simpleCollectionRoutes('categories', 'categories', 'CategorÃƒÂ­a');
 simpleCollectionRoutes('brands', 'brands', 'Marca');
 simpleCollectionRoutes('suppliers', 'suppliers', 'Proveedor');
 
@@ -331,6 +334,30 @@ app.patch('/api/products/:id/toggle', auth, requireRoles('ADMIN'), (req, res) =>
 });
 
 // Dashboard & alerts
+app.get('/api/dashboard/summary', auth, requireRoles('ADMIN', 'TRABAJADOR'), (req, res) => {
+  const db = req.db;
+  const totalInventoryValue = db.products.reduce((sum, p) => sum + p.salePrice * p.stock, 0);
+  res.json({
+    totalProducts: db.products.length,
+    totalCategories: db.categories.length,
+    totalBrands: db.brands.length,
+    totalSuppliers: db.suppliers.length,
+    lowStock: db.products.filter(p => p.stock <= p.minimumStock).length,
+    inventoryValue: totalInventoryValue,
+    recentMovements: db.movements.slice(-5).reverse().map(m => {
+      const product = db.products.find(p => p.id === m.productId);
+      const user = db.users.find(u => u.id === m.userId);
+      return {
+        id: m.id,
+        productName: product?.name || '',
+        type: m.type,
+        quantity: m.quantity,
+        userName: user ? `${user.firstName} ${user.lastName}` : '',
+        createdAt: m.createdAt
+      };
+    })
+  });
+});
 
 app.get('/api/alerts/low-stock', auth, requireRoles('ADMIN', 'TRABAJADOR'), (req, res) => {
   const db = req.db;
@@ -458,16 +485,16 @@ app.delete('/api/cart/items', auth, requireRoles('CLIENTE'), (req, res) => {
 app.post('/api/orders', auth, requireRoles('CLIENTE'), (req, res) => {
   const db = req.db;
   const cart = db.carts.find(c => c.userId === req.user.id);
-  if (!cart || !cart.items.length) return res.status(400).json({ message: 'El carrito estÃ¡ vacÃ­o' });
+  if (!cart || !cart.items.length) return res.status(400).json({ message: 'El carrito estÃƒÂ¡ vacÃƒÂ­o' });
   const { deliveryType, deliveryAddress = '', notes = '' } = req.body;
   if (deliveryType === 'DOMICILIO' && !deliveryAddress) {
-    return res.status(400).json({ message: 'La direcciÃ³n es obligatoria para domicilio' });
+    return res.status(400).json({ message: 'La direcciÃƒÂ³n es obligatoria para domicilio' });
   }
   const details = [];
   let subtotal = 0;
   for (const item of cart.items) {
     const product = db.products.find(p => p.id === item.productId);
-    if (!product || !product.active) return res.status(400).json({ message: `Producto invÃ¡lido: ${item.productId}` });
+    if (!product || !product.active) return res.status(400).json({ message: `Producto invÃƒÂ¡lido: ${item.productId}` });
     if (product.stock < item.quantity) return res.status(400).json({ message: `Stock insuficiente para ${product.name}` });
     const line = {
       id: nextId(db, 'orderDetails'),
@@ -494,7 +521,7 @@ app.post('/api/orders', auth, requireRoles('CLIENTE'), (req, res) => {
   };
   db.orders.push(order);
   cart.items = [];
-  adminNotify(db, 'PEDIDO_CREADO', 'Nuevo pedido creado', `El cliente ${req.user.firstName} ${req.user.lastName} creÃ³ el pedido ${order.number} por valor de ${order.total}.`, req.user, 'PEDIDO', order.id);
+  adminNotify(db, 'PEDIDO_CREADO', 'Nuevo pedido creado', `El cliente ${req.user.firstName} ${req.user.lastName} creÃƒÂ³ el pedido ${order.number} por valor de ${order.total}.`, req.user, 'PEDIDO', order.id);
   saveDb(db);
   res.status(201).json({ success: true, message: 'Pedido creado correctamente', data: orderResponse(db, order) });
 });
@@ -543,7 +570,7 @@ app.post('/api/payments', auth, requireRoles('CLIENTE'), (req, res) => {
     paidAt: now()
   };
   db.payments.push(payment);
-  adminNotify(db, 'PAGO_REGISTRADO', 'Pago registrado por cliente', `El cliente ${req.user.firstName} ${req.user.lastName} registrÃ³ un pago para el pedido ${order.number} por valor de ${payment.amount}.`, req.user, 'PAGO', payment.id);
+  adminNotify(db, 'PAGO_REGISTRADO', 'Pago registrado por cliente', `El cliente ${req.user.firstName} ${req.user.lastName} registrÃƒÂ³ un pago para el pedido ${order.number} por valor de ${payment.amount}.`, req.user, 'PAGO', payment.id);
   saveDb(db);
   res.status(201).json({ success: true, message: 'Pago registrado correctamente', data: paymentResponse(db, payment) });
 });
@@ -578,7 +605,7 @@ function approveReject(req, res, newStatus) {
         type: 'SALIDA',
         quantity: d.quantity,
         reason: 'Venta',
-        notes: `Descuento por aprobaciÃ³n de pago ${payment.id}`,
+        notes: `Descuento por aprobaciÃƒÂ³n de pago ${payment.id}`,
         createdAt: now()
       });
     }
@@ -591,7 +618,7 @@ function approveReject(req, res, newStatus) {
     db,
     newStatus === 'APROBADO' ? 'PAGO_APROBADO' : 'PAGO_RECHAZADO',
     newStatus === 'APROBADO' ? 'Pago aprobado' : 'Pago rechazado',
-    `El ${req.user.role} ${req.user.firstName} ${req.user.lastName} ${newStatus === 'APROBADO' ? 'aprobÃ³' : 'rechazÃ³'} el pago del pedido ${order.number} del cliente ${user.firstName} ${user.lastName}.`,
+    `El ${req.user.role} ${req.user.firstName} ${req.user.lastName} ${newStatus === 'APROBADO' ? 'aprobÃƒÂ³' : 'rechazÃƒÂ³'} el pago del pedido ${order.number} del cliente ${user.firstName} ${user.lastName}.`,
     req.user,
     'PAGO',
     payment.id
@@ -645,7 +672,7 @@ app.post('/api/invoices/generate/:orderId', auth, requireRoles('ADMIN', 'TRABAJA
   };
   db.invoices.push(invoice);
   const customer = db.users.find(u => u.id === order.userId);
-  adminNotify(db, 'FACTURA_GENERADA', 'Factura generada', `El ${req.user.role} ${req.user.firstName} ${req.user.lastName} generÃ³ la factura ${invoice.number} del pedido ${order.number} del cliente ${customer.firstName} ${customer.lastName}.`, req.user, 'FACTURA', invoice.id);
+  adminNotify(db, 'FACTURA_GENERADA', 'Factura generada', `El ${req.user.role} ${req.user.firstName} ${req.user.lastName} generÃƒÂ³ la factura ${invoice.number} del pedido ${order.number} del cliente ${customer.firstName} ${customer.lastName}.`, req.user, 'FACTURA', invoice.id);
   saveDb(db);
   res.status(201).json({ success: true, message: 'Factura generada correctamente', data: invoiceResponse(db, invoice) });
 });
@@ -663,7 +690,7 @@ app.get('/api/notifications/admin/count', auth, requireRoles('ADMIN'), (req, res
 app.patch('/api/notifications/admin/:id/read', auth, requireRoles('ADMIN'), (req, res) => {
   const db = req.db;
   const notification = db.notifications.find(n => n.id === Number(req.params.id));
-  if (!notification) return res.status(404).json({ message: 'NotificaciÃ³n no encontrada' });
+  if (!notification) return res.status(404).json({ message: 'NotificaciÃƒÂ³n no encontrada' });
   notification.read = true;
   saveDb(db);
   res.json(notification);
@@ -686,6 +713,72 @@ const buildSafeUser = (user) => ({
   rol: user.rol
 })
 
+app.get('/api/auth/me', auth, (req, res) => {
+  const user = users.find((u) => u.id === req.user.id)
+
+  if (!user) {
+    return res.status(404).json({
+      success: false,
+      message: 'Usuario no encontrado'
+    })
+  }
+
+  return res.json({
+    success: true,
+    data: buildSafeUser(user)
+  })
+})
+
+app.put('/api/users/profile', auth, (req, res) => {
+  const user = users.find((u) => u.id === req.user.id)
+
+  if (!user) {
+    return res.status(404).json({
+      success: false,
+      message: 'Usuario no encontrado'
+    })
+  }
+
+  const {
+    nombre = '',
+    apellido = '',
+    telefono = '',
+    direccion = ''
+  } = req.body || {}
+
+  if (!nombre.trim() || !apellido.trim()) {
+    return res.status(400).json({
+      success: false,
+      message: 'Nombre y apellido son obligatorios'
+    })
+  }
+
+  user.nombre = nombre.trim()
+  user.apellido = apellido.trim()
+  user.telefono = telefono.trim()
+  user.direccion = direccion.trim()
+
+  return res.json({
+    success: true,
+    message: 'Perfil actualizado correctamente',
+    data: buildSafeUser(user)
+  })
+})
+
+
+
+
+const presentWorker = (u) => ({
+  id: u.id,
+  firstName: u.firstName || '',
+  lastName: u.lastName || '',
+  email: u.email || '',
+  phone: u.phone || '',
+  address: u.address || '',
+  role: u.role || 'TRABAJADOR',
+  active: typeof u.active === 'boolean' ? u.active : true,
+  createdAt: u.createdAt || null
+});
 
 app.get('/api/users/workers', auth, (req, res) => {
   if (req.user.role !== 'ADMIN') {
@@ -729,7 +822,7 @@ app.post('/api/users/workers', auth, (req, res) => {
   if (!String(firstName).trim() || !String(lastName).trim() || !String(email).trim() || !String(password).trim()) {
     return res.status(400).json({
       success: false,
-      message: 'Nombre, apellido, correo y contraseÃ±a son obligatorios'
+      message: 'Nombre, apellido, correo y contraseña son obligatorios'
     });
   }
 
@@ -842,276 +935,9 @@ app.put('/api/users/workers/:id', auth, (req, res) => {
   });
 });
 
-app.get('/api/admin/stats', auth, (req, res) => {
-  if (req.user.role !== 'ADMIN') {
-    return res.status(403).json({
-      success: false,
-      message: 'No autorizado'
-    });
-  }
-
-  const db = loadDb();
-
-  const products = Array.isArray(db.products) ? db.products : [];
-  const users = Array.isArray(db.users) ? db.users : [];
-  const orders = Array.isArray(db.orders) ? db.orders : [];
-  const payments = Array.isArray(db.payments) ? db.payments : [];
-  const invoices = Array.isArray(db.invoices) ? db.invoices : [];
-
-  const workers = users.filter((u) => u.role === 'TRABAJADOR');
-  const customers = users.filter((u) => u.role === 'CLIENTE');
-  const lowStock = products.filter((p) => Number(p.stock || 0) <= 5);
-  const pendingPayments = payments.filter((p) => String(p.status || '').toUpperCase() === 'PENDIENTE');
-
-  const totalSales = orders.reduce((acc, item) => acc + Number(item.total || 0), 0);
-
-  return res.json({
-    success: true,
-    data: {
-      totalProducts: products.length,
-      totalWorkers: workers.length,
-      totalCustomers: customers.length,
-      totalOrders: orders.length,
-      totalPayments: payments.length,
-      totalInvoices: invoices.length,
-      lowStockCount: lowStock.length,
-      pendingPaymentsCount: pendingPayments.length,
-      totalSales
-    }
-  });
-});
-
-app.get('/api/dashboard/summary', auth, (req, res) => {
-  if (!['ADMIN', 'TRABAJADOR'].includes(req.user.role)) {
-    return res.status(403).json({
-      success: false,
-      message: 'No autorizado'
-    });
-  }
-
-  const db = loadDb();
-
-  const products = Array.isArray(db.products) ? db.products : [];
-  const categories = Array.isArray(db.categories) ? db.categories : [];
-  const brands = Array.isArray(db.brands) ? db.brands : [];
-  const suppliers = Array.isArray(db.suppliers) ? db.suppliers : [];
-  const users = Array.isArray(db.users) ? db.users : [];
-  const movements = Array.isArray(db.movements) ? db.movements : [];
-  const orders = Array.isArray(db.orders) ? db.orders : [];
-  const payments = Array.isArray(db.payments) ? db.payments : [];
-  const invoices = Array.isArray(db.invoices) ? db.invoices : [];
-
-  const sortedDesc = (rows) =>
-    [...rows].sort((a, b) => {
-      const da = new Date(a.createdAt || a.issuedAt || 0).getTime();
-      const dbv = new Date(b.createdAt || b.issuedAt || 0).getTime();
-      return dbv - da;
-    });
-
-  const lowStockProducts = products
-    .filter((p) => p.active !== false)
-    .filter((p) => Number(p.stock || 0) <= Number(p.minimumStock || 5))
-    .map((p) => ({
-      id: p.id,
-      code: p.code,
-      name: p.name,
-      stock: Number(p.stock || 0),
-      minimumStock: Number(p.minimumStock || 0),
-      categoryName: p.categoryName || '',
-      brandName: p.brandName || ''
-    }));
-
-  const recentMovements = sortedDesc(movements)
-    .slice(0, 8)
-    .map((m) => ({
-      id: m.id,
-      productName: m.productName || '',
-      productCode: m.productCode || '',
-      type: m.type || '',
-      quantity: Number(m.quantity || 0),
-      userName: m.userName || '',
-      createdAt: m.createdAt || null
-    }));
-
-  const recentOrders = sortedDesc(orders)
-    .slice(0, 6)
-    .map((o) => ({
-      orderId: o.orderId || o.id,
-      orderNumber: o.orderNumber || o.number || '',
-      customerName: o.customerName || '',
-      status: o.status || '',
-      total: Number(o.total || 0),
-      createdAt: o.createdAt || null
-    }));
-
-  const recentPayments = sortedDesc(payments)
-    .slice(0, 6)
-    .map((p) => ({
-      paymentId: p.paymentId || p.id,
-      orderNumber: p.orderNumber || p.orderId || '',
-      amount: Number(p.amount || 0),
-      method: p.method || '',
-      status: p.status || '',
-      createdAt: p.createdAt || null
-    }));
-
-  const totalSales = orders
-    .filter((o) => String(o.status || '').toUpperCase() !== 'CANCELADO')
-    .reduce((acc, item) => acc + Number(item.total || 0), 0);
-
-  const inventoryValue = products.reduce((acc, item) => {
-    return acc + (Number(item.stock || 0) * Number(item.purchasePrice || 0));
-  }, 0);
-
-  return res.json({
-    success: true,
-    data: {
-      totalProducts: products.length,
-      totalCategories: categories.length,
-      totalBrands: brands.length,
-      totalSuppliers: suppliers.length,
-      totalWorkers: users.filter((u) => u.role === 'TRABAJADOR').length,
-      totalCustomers: users.filter((u) => u.role === 'CLIENTE').length,
-      totalOrders: orders.length,
-      totalPayments: payments.length,
-      totalInvoices: invoices.length,
-      lowStock: lowStockProducts.length,
-      pendingPayments: payments.filter((p) => String(p.status || '').toUpperCase() === 'PENDIENTE').length,
-      totalSales,
-      inventoryValue,
-      lowStockProducts,
-      recentMovements,
-      recentOrders,
-      recentPayments
-    }
-  });
-});
-
-app.get('/api/auth/me', auth, (req, res) => {
-  const db = loadDb();
-  const currentUser = db.users.find((u) => Number(u.id) === Number(req.user.id));
-
-  if (!currentUser) {
-    return res.status(404).json({
-      success: false,
-      message: 'Usuario no encontrado'
-    });
-  }
-
-  return res.json({
-    success: true,
-    data: sanitizeUser(currentUser)
-  });
-});
-
-app.put('/api/users/profile', auth, (req, res) => {
-  const db = loadDb();
-  const currentUser = db.users.find((u) => Number(u.id) === Number(req.user.id));
-
-  if (!currentUser) {
-    return res.status(404).json({
-      success: false,
-      message: 'Usuario no encontrado'
-    });
-  }
-
-  const {
-    firstName = '',
-    lastName = '',
-    email = '',
-    phone = '',
-    address = ''
-  } = req.body || {};
-
-  if (!String(firstName).trim() || !String(lastName).trim() || !String(email).trim()) {
-    return res.status(400).json({
-      success: false,
-      message: 'Nombre, apellido y correo son obligatorios'
-    });
-  }
-
-  const exists = db.users.some(
-    (u) =>
-      Number(u.id) !== Number(currentUser.id) &&
-      String(u.email).toLowerCase() === String(email).trim().toLowerCase()
-  );
-
-  if (exists) {
-    return res.status(400).json({
-      success: false,
-      message: 'Ya existe otro usuario con ese correo'
-    });
-  }
-
-  currentUser.firstName = String(firstName).trim();
-  currentUser.lastName = String(lastName).trim();
-  currentUser.email = String(email).trim().toLowerCase();
-  currentUser.phone = String(phone).trim();
-  currentUser.address = String(address).trim();
-
-  saveDb(db);
-
-  return res.json({
-    success: true,
-    message: 'Perfil actualizado correctamente',
-    data: sanitizeUser(currentUser)
-  });
-});
-
-app.put('/api/users/profile/password', auth, (req, res) => {
-  const db = loadDb();
-  const currentUser = db.users.find((u) => Number(u.id) === Number(req.user.id));
-
-  if (!currentUser) {
-    return res.status(404).json({
-      success: false,
-      message: 'Usuario no encontrado'
-    });
-  }
-
-  const {
-    currentPassword = '',
-    newPassword = ''
-  } = req.body || {};
-
-  if (!String(currentPassword).trim() || !String(newPassword).trim()) {
-    return res.status(400).json({
-      success: false,
-      message: 'La contraseña actual y la nueva contraseña son obligatorias'
-    });
-  }
-
-  if (String(currentUser.password) !== String(currentPassword)) {
-    return res.status(400).json({
-      success: false,
-      message: 'La contraseña actual no es correcta'
-    });
-  }
-
-  if (String(newPassword).trim().length < 6) {
-    return res.status(400).json({
-      success: false,
-      message: 'La nueva contraseña debe tener al menos 6 caracteres'
-    });
-  }
-
-  currentUser.password = String(newPassword).trim();
-  saveDb(db);
-
-  return res.json({
-    success: true,
-    message: 'Contraseña actualizada correctamente'
-  });
-});
-
 app.listen(PORT, () => {
   console.log(`Backend licoreria corriendo en http://localhost:${PORT}`);
 });
-
-
-
-
-
 
 
 

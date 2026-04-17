@@ -1,57 +1,119 @@
-import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+﻿import React, { useEffect, useState } from 'react';
 import { api } from '../api';
 
 export default function MyOrdersPage() {
   const [orders, setOrders] = useState([]);
   const [selected, setSelected] = useState(null);
-  const navigate = useNavigate();
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
-  useEffect(() => { api.get('/orders/my').then(({ data }) => setOrders(data)); }, []);
+  async function loadOrders() {
+    try {
+      setLoading(true);
+      setError('');
+
+      const { data } = await api.get('/orders');
+      const ordersData = Array.isArray(data?.data)
+        ? data.data
+        : Array.isArray(data)
+        ? data
+        : [];
+
+      setOrders(ordersData);
+
+      if (ordersData.length > 0) {
+        setSelected(ordersData[0]);
+      }
+    } catch (err) {
+      setError(err.response?.data?.message || 'No se pudieron cargar tus pedidos.');
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    loadOrders();
+  }, []);
 
   return (
     <div className="container page">
-      <h1>Mis pedidos</h1>
-      <div className="split">
+      <div
+        className="stack"
+        style={{ justifyContent: 'space-between', alignItems: 'end', gap: 16, flexWrap: 'wrap' }}
+      >
+        <div>
+          <h1>Mis pedidos</h1>
+          <p className="small">Consulta el estado y el detalle de tus pedidos.</p>
+        </div>
+      </div>
+
+      {error && <div className="notice error">{error}</div>}
+
+      <div className="grid-2" style={{ marginTop: 16 }}>
         <section className="card">
-          <div className="table-wrap">
-            <table>
-              <thead><tr><th>Número</th><th>Estado</th><th>Entrega</th><th>Total</th><th></th></tr></thead>
-              <tbody>
-                {orders.map(order => (
-                  <tr key={order.orderId}>
-                    <td>{order.orderNumber}</td>
-                    <td><span className={`badge ${order.status === 'PENDIENTE' ? 'warning' : order.status === 'PAGADO' ? 'success' : order.status === 'ENTREGADO' ? 'info' : 'danger'}`}>{order.status}</span></td>
-                    <td>{order.deliveryType}</td>
-                    <td>${order.total.toLocaleString('es-CO')}</td>
-                    <td className="stack">
-                      <button className="btn btn-outline" onClick={()=>setSelected(order)}>Ver</button>
-                      {order.status === 'PENDIENTE' && <button className="btn btn-primary" onClick={()=>navigate(`/pay/${order.orderId}`)}>Pagar</button>}
-                    </td>
+          <h3>Listado de pedidos</h3>
+
+          {loading ? (
+            <div className="notice">Cargando pedidos...</div>
+          ) : orders.length === 0 ? (
+            <div className="notice">No tienes pedidos registrados.</div>
+          ) : (
+            <div style={{ overflowX: 'auto' }}>
+              <table className="table">
+                <thead>
+                  <tr>
+                    <th>Número</th>
+                    <th>Estado</th>
+                    <th>Entrega</th>
+                    <th>Total</th>
+                    <th></th>
                   </tr>
-                ))}
-                {!orders.length && <tr><td colSpan="5">No tienes pedidos.</td></tr>}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody>
+                  {orders.map((order) => (
+                    <tr key={order.orderId || order.id}>
+                      <td>{order.orderNumber || order.number}</td>
+                      <td>{order.status}</td>
+                      <td>{order.deliveryType || 'No disponible'}</td>
+                      <td>${Number(order.total || 0).toLocaleString('es-CO')}</td>
+                      <td>
+                        <button
+                          className="btn btn-outline"
+                          onClick={() => setSelected(order)}
+                        >
+                          Ver detalle
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
         </section>
-        {selected && (
-          <section className="card">
-            <h3>Detalle</h3>
-            <p><strong>Número:</strong> {selected.orderNumber}</p>
-            <p><strong>Estado:</strong> {selected.status}</p>
-            <p><strong>Entrega:</strong> {selected.deliveryType}</p>
-            <p><strong>Dirección:</strong> {selected.deliveryAddress || '—'}</p>
-            <p><strong>Total:</strong> ${selected.total.toLocaleString('es-CO')}</p>
-            <hr className="sep" />
-            {selected.details.map(item => (
-              <div key={item.detailId} className="stack" style={{justifyContent:'space-between'}}>
-                <span>{item.name} x {item.quantity}</span>
-                <strong>${item.subtotal.toLocaleString('es-CO')}</strong>
-              </div>
-            ))}
-          </section>
-        )}
+
+        <section className="card">
+          <h3>Detalle del pedido</h3>
+
+          {!selected ? (
+            <div className="notice">Selecciona un pedido para ver el detalle.</div>
+          ) : (
+            <>
+              <p><strong>Número:</strong> {selected.orderNumber || selected.number}</p>
+              <p><strong>Estado:</strong> {selected.status}</p>
+              <p><strong>Entrega:</strong> {selected.deliveryType || 'No disponible'}</p>
+              <p><strong>Dirección:</strong> {selected.deliveryAddress || 'Sin dirección'}</p>
+              <p><strong>Total:</strong> ${Number(selected.total || 0).toLocaleString('es-CO')}</p>
+              <p>
+                <strong>Fecha:</strong>{' '}
+                {selected.createdAt
+                  ? new Date(selected.createdAt).toLocaleString('es-CO')
+                  : 'No disponible'}
+              </p>
+              <p><strong>Observación:</strong> {selected.notes || 'Sin observación'}</p>
+            </>
+          )}
+        </section>
       </div>
     </div>
   );

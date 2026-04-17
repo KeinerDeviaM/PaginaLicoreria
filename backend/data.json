@@ -1,17 +1,17 @@
 {
   "counters": {
-    "users": 3,
-    "categories": 5,
-    "brands": 4,
+    "users": 4,
+    "categories": 6,
+    "brands": 5,
     "suppliers": 3,
-    "products": 7,
-    "movements": 4,
-    "orders": 1,
-    "orderDetails": 2,
-    "cartItems": 1,
-    "payments": 0,
-    "invoices": 0,
-    "notifications": 0
+    "products": 8,
+    "movements": 5,
+    "orders": 2,
+    "orderDetails": 3,
+    "cartItems": 2,
+    "payments": 1,
+    "invoices": 1,
+    "notifications": 4
   },
   "users": [
     {
@@ -49,6 +49,54 @@
       "role": "CLIENTE",
       "active": true,
       "createdAt": "2026-04-14T03:50:54.228Z"
+    },
+    {
+      "id": 4,
+      "firstName": "Keiner",
+      "lastName": "Devia",
+      "email": "keiner@gmail.com",
+      "phone": "3157398252",
+      "address": "armenia",
+      "passwordHash": "f3d6c980065a2cdc4be1c076986400f5:19cf1de2cd9785ffaf0b64209a2fa6eea2a6fe97c119921ba4188a455d70f4419b4f6ce720a6cf0f94f99fadc636b80e4aa09343c322c121575ccad7d8a95f60",
+      "role": "CLIENTE",
+      "active": true,
+      "createdAt": "2026-04-14T20:05:55.856Z"
+    },
+    {
+      "id": 5,
+      "firstName": "Juan José",
+      "lastName": "Santacruz Piedrahita",
+      "email": "juancho@licoreria.com",
+      "password": "12345678",
+      "phone": "3157398252",
+      "address": "Armenia",
+      "role": "TRABAJADOR",
+      "active": true,
+      "createdAt": "2026-04-15T20:35:31.764Z"
+    },
+    {
+      "id": 6,
+      "firstName": "Manuel",
+      "lastName": "Gonzalez",
+      "email": "manuelito@gmail.com",
+      "password": "123456789",
+      "phone": "651515151",
+      "address": "armenia",
+      "role": "TRABAJADOR",
+      "active": true,
+      "createdAt": "2026-04-15T20:36:34.406Z"
+    },
+    {
+      "id": 7,
+      "firstName": "Daniel",
+      "lastName": "Marquez",
+      "email": "danielm@gmail.com",
+      "password": "12345678",
+      "phone": "484117",
+      "address": "Armenia",
+      "role": "TRABAJADOR",
+      "active": true,
+      "createdAt": "2026-04-16T21:34:57.415Z"
     }
   ],
   "categories": [
@@ -81,6 +129,12 @@
       "active": true,
       "name": "CHICHAS",
       "description": "Frias"
+    },
+    {
+      "id": 6,
+      "active": true,
+      "name": "Chirrinchi",
+      "description": "Frio y Dulce"
     }
   ],
   "brands": [
@@ -107,6 +161,12 @@
       "name": "Moet & Chandon",
       "description": "Champagne",
       "active": true
+    },
+    {
+      "id": 5,
+      "active": true,
+      "name": "Quindiano",
+      "description": "Natural"
     }
   ],
   "suppliers": [
@@ -172,7 +232,7 @@
       "alcohol": 40,
       "purchasePrice": 65000,
       "salePrice": 98000,
-      "stock": 30,
+      "stock": 29,
       "minimumStock": 5,
       "active": true
     },
@@ -260,6 +320,23 @@
       "stock": 1,
       "minimumStock": 3,
       "active": true
+    },
+    {
+      "id": 8,
+      "categoryId": 6,
+      "brandId": 5,
+      "supplierId": 2,
+      "code": "1529",
+      "name": "Aguardiente Quindiano",
+      "description": "Aperitivo",
+      "imageUrl": "",
+      "volumeMl": 500,
+      "alcohol": 25,
+      "purchasePrice": 8000,
+      "salePrice": 10000,
+      "stock": 15,
+      "minimumStock": 5,
+      "active": true
     }
   ],
   "movements": [
@@ -302,11 +379,122 @@
       "reason": "fjasljkads",
       "notes": "dsasda",
       "createdAt": "2026-04-14T14:57:09.200Z"
+    },
+    {
+      "id": 5,
+      "productId": 2,
+      "userId": 1,
+      "type": "SALIDA",
+      "quantity": 1,
+      "reason": "Venta",
+      "notes": "Descuento por aprobación de pago 1",
+      "createdAt": "2026-04-14T21:16:19.662Z"
     }
   ],
-  "carts": [],
-  "orders": [],
-  "payments": [],
-  "invoices": [],
-  "notifications": []
+  "carts": [
+    {
+      "userId": 4,
+      "items": []
+    }
+  ],
+  "orders": [
+    {
+      "id": 2,
+      "number": "PED-211891",
+      "userId": 4,
+      "status": "PAGADO",
+      "deliveryType": "DOMICILIO",
+      "deliveryAddress": "Armenia",
+      "notes": "En san sur",
+      "subtotal": 98000,
+      "total": 98000,
+      "details": [
+        {
+          "id": 3,
+          "productId": 2,
+          "quantity": 1,
+          "unitPrice": 98000,
+          "subtotal": 98000
+        }
+      ],
+      "createdAt": "2026-04-14T21:13:31.891Z"
+    }
+  ],
+  "payments": [
+    {
+      "id": 1,
+      "orderId": 2,
+      "method": "TARJETA",
+      "status": "APROBADO",
+      "reference": "2115",
+      "amount": 98000,
+      "paidAt": "2026-04-14T21:16:19.662Z"
+    }
+  ],
+  "invoices": [
+    {
+      "id": 1,
+      "number": "FAC-405550",
+      "orderId": 2,
+      "status": "GENERADA",
+      "subtotal": 98000,
+      "total": 98000,
+      "notes": "Factura generada para PED-211891",
+      "issuedAt": "2026-04-14T21:16:45.550Z"
+    }
+  ],
+  "notifications": [
+    {
+      "id": 4,
+      "type": "FACTURA_GENERADA",
+      "title": "Factura generada",
+      "message": "El ADMIN Admin Sistema generó la factura FAC-405550 del pedido PED-211891 del cliente Keiner Devia.",
+      "actorName": "Admin Sistema",
+      "actorEmail": "admin@licoreria.com",
+      "actorRole": "ADMIN",
+      "referenceType": "FACTURA",
+      "referenceId": 1,
+      "read": true,
+      "createdAt": "2026-04-14T21:16:45.550Z"
+    },
+    {
+      "id": 3,
+      "type": "PAGO_APROBADO",
+      "title": "Pago aprobado",
+      "message": "El ADMIN Admin Sistema aprobó el pago del pedido PED-211891 del cliente Keiner Devia.",
+      "actorName": "Admin Sistema",
+      "actorEmail": "admin@licoreria.com",
+      "actorRole": "ADMIN",
+      "referenceType": "PAGO",
+      "referenceId": 1,
+      "read": true,
+      "createdAt": "2026-04-14T21:16:19.662Z"
+    },
+    {
+      "id": 2,
+      "type": "PAGO_REGISTRADO",
+      "title": "Pago registrado por cliente",
+      "message": "El cliente Keiner Devia registró un pago para el pedido PED-211891 por valor de 98000.",
+      "actorName": "Keiner Devia",
+      "actorEmail": "keiner@gmail.com",
+      "actorRole": "CLIENTE",
+      "referenceType": "PAGO",
+      "referenceId": 1,
+      "read": true,
+      "createdAt": "2026-04-14T21:13:51.334Z"
+    },
+    {
+      "id": 1,
+      "type": "PEDIDO_CREADO",
+      "title": "Nuevo pedido creado",
+      "message": "El cliente Keiner Devia creó el pedido PED-211891 por valor de 98000.",
+      "actorName": "Keiner Devia",
+      "actorEmail": "keiner@gmail.com",
+      "actorRole": "CLIENTE",
+      "referenceType": "PEDIDO",
+      "referenceId": 2,
+      "read": true,
+      "createdAt": "2026-04-14T21:13:31.891Z"
+    }
+  ]
 }

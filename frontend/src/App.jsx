@@ -1,3 +1,4 @@
+﻿import ProfilePage from './pages/ProfilePage';
 import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { PublicLayout, InternalLayout } from './components/AppLayout';
@@ -22,6 +23,7 @@ import OrdersPage from './pages/OrdersPage';
 import PaymentsPage from './pages/PaymentsPage';
 import InvoicesPage from './pages/InvoicesPage';
 import NotificationsPage from './pages/NotificationsPage';
+import AdminWorkersPage from './pages/AdminWorkersPage';
 
 export default function App() {
   return (
@@ -43,9 +45,9 @@ export default function App() {
       <Route path="/admin" element={<ProtectedRoute roles={['ADMIN']}><InternalLayout role="ADMIN" /></ProtectedRoute>}>
         <Route path="dashboard" element={<InternalDashboardPage />} />
         <Route path="notifications" element={<NotificationsPage />} />
-        <Route path="categories" element={<MasterCrudPage endpoint="/categories" title="Categorías" fields={[{name:'name',label:'Nombre'},{name:'description',label:'Descripción',type:'textarea'}]} />} />
-        <Route path="brands" element={<MasterCrudPage endpoint="/brands" title="Marcas" fields={[{name:'name',label:'Nombre'},{name:'description',label:'Descripción',type:'textarea'}]} />} />
-        <Route path="suppliers" element={<MasterCrudPage endpoint="/suppliers" title="Proveedores" fields={[{name:'name',label:'Nombre'},{name:'contactName',label:'Contacto'},{name:'email',label:'Correo'},{name:'phone',label:'Teléfono'},{name:'address',label:'Dirección'},{name:'city',label:'Ciudad'}]} />} />
+        <Route path="categories" element={<MasterCrudPage endpoint="/categories" title="CategorÃ­as" fields={[{name:'name',label:'Nombre'},{name:'description',label:'DescripciÃ³n',type:'textarea'}]} />} />
+        <Route path="brands" element={<MasterCrudPage endpoint="/brands" title="Marcas" fields={[{name:'name',label:'Nombre'},{name:'description',label:'DescripciÃ³n',type:'textarea'}]} />} />
+        <Route path="suppliers" element={<MasterCrudPage endpoint="/suppliers" title="Proveedores" fields={[{name:'name',label:'Nombre'},{name:'contactName',label:'Contacto'},{name:'email',label:'Correo'},{name:'phone',label:'TelÃ©fono'},{name:'address',label:'DirecciÃ³n'},{name:'city',label:'Ciudad'}]} />} />
         <Route path="products" element={<ProductsPage />} />
         <Route path="movements" element={<MovementsPage />} />
         <Route path="alerts" element={<AlertsPage />} />
@@ -65,6 +67,13 @@ export default function App() {
       </Route>
 
       <Route path="*" element={<Navigate to="/" replace />} />
-    </Routes>
+            <Route path="/perfil" element={<ProfilePage />} />`r`n              <Route path="/profile" element={<ProtectedRoute roles={['CLIENTE','ADMIN','TRABAJADOR']}><ProfilePage /></ProtectedRoute>} />`r`n              <Route path="/admin/workers" element={<ProtectedRoute roles={['ADMIN']}><AdminWorkersPage /></ProtectedRoute>} />`r`n      </Routes>
   );
 }
+
+
+
+
+
+
+

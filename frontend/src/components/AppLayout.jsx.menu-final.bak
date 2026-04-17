@@ -1,0 +1,125 @@
+﻿import React from 'react';
+import { NavLink, Outlet, useNavigate } from 'react-router-dom';
+import { clearAuth, getAuth } from '../auth';
+
+export function TopNav() {
+  const { user } = getAuth();
+  const navigate = useNavigate();
+
+  return (
+    <header className="nav">
+      <div className="nav-inner">
+        <NavLink to="/" className="brand">
+          <span className="brand-badge">L</span>
+          <div>
+            <div>LicorerÃ­a Pro</div>
+            <div className="small">Inventario + ventas</div>
+          </div>
+        </NavLink>
+
+        <nav className="nav-links">
+          <NavLink to="/" className="nav-link">Inicio</NavLink>
+          <NavLink to="/shop/products" className="nav-link">CatÃ¡logo</NavLink>
+          {user?.role === 'CLIENTE' && <>
+            <NavLink to="/cart" className="nav-link">Carrito</NavLink>
+            <NavLink to="/orders" className="nav-link">Mis pedidos</NavLink>
+            <NavLink to="/invoices" className="nav-link">Mis facturas</NavLink>
+          </>}
+          {user?.role === 'ADMIN' && <NavLink to="/admin/dashboard" className="nav-link">Panel admin</NavLink>}
+          {user?.role === 'TRABAJADOR' && <NavLink to="/worker/dashboard" className="nav-link">Panel trabajador</NavLink>}
+        </nav>
+
+        <div className="stack">
+          {!user ? (
+            <>
+              <NavLink to="/login" className="btn btn-outline">Ingresar</NavLink>
+              <NavLink to="/register" className="btn btn-primary">Crear cuenta</NavLink>
+            </>
+          ) : (
+            <>
+              <div className="small" style={{alignSelf:'center'}}>{user.firstName} {user.lastName} Â· {user.role}</div>
+              <button className="btn btn-outline" onClick={() => { clearAuth(); navigate('/login'); }}>Salir</button>
+            </>
+          )}
+        </div>
+      </div>
+    </header>
+  );
+}
+
+export function InternalLayout({ role }) {
+  const { user } = getAuth();
+  const navigate = useNavigate();
+  const base = role === 'ADMIN' ? '/admin' : '/worker';
+  const menu = role === 'ADMIN'
+    ? [
+        ['Dashboard', `${base}/dashboard`],
+        ['Notificaciones', `${base}/notifications`],
+        ['CategorÃ­as', `${base}/categories`],
+        ['Marcas', `${base}/brands`],
+        ['Proveedores', `${base}/suppliers`],
+        ['Productos', `${base}/products`],
+        ['Movimientos', `${base}/movements`],
+        ['Alertas', `${base}/alerts`],
+        ['Pedidos', `${base}/orders`],
+        ['Pagos', `${base}/payments`],
+        ['Facturas', `${base}/invoices`]
+      ]
+    : [
+        ['Dashboard', `${base}/dashboard`],
+        ['Productos', `${base}/products`],
+        ['Movimientos', `${base}/movements`],
+        ['Alertas', `${base}/alerts`],
+        ['Pedidos', `${base}/orders`],
+        ['Pagos', `${base}/payments`],
+        ['Facturas', `${base}/invoices`]
+      ];
+
+  return (
+    <>
+      <header className="nav">
+        <div className="nav-inner">
+          <div className="brand">
+            <span className="brand-badge">{role === 'ADMIN' ? 'A' : 'T'}</span>
+            <div>
+              <div>{role === 'ADMIN' ? 'Panel Admin' : 'Panel Trabajador'}</div>
+              <div className="small">{user?.firstName} {user?.lastName}</div>
+            </div>
+          </div>
+          <div className="stack">
+            <button className="btn btn-outline" onClick={() => navigate('/')}>Ver tienda</button>
+            <button className="btn btn-danger" onClick={() => { clearAuth(); navigate('/login'); }}>Salir</button>
+          </div>
+        </div>
+      </header>
+      <div className="layout">
+        <aside className="sidebar">
+          <div className="menu">
+            {menu.map(([label, href]) => (
+              <NavLink key={href} to={href}>{label}</NavLink>
+            ))}
+          </div>
+        </aside>
+        <main className="main">
+          <Outlet />
+        </main>
+      </div>
+    </>
+  );
+}
+
+export function PublicLayout() {
+  return (
+    <>
+      <TopNav />
+      <main>
+        <Outlet />
+      </main>
+    </>
+  );
+}
+
+
+
+
+

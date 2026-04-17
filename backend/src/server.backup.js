@@ -1,4 +1,4 @@
-﻿const express = require('express');
+const express = require('express');
 const cors = require('cors');
 const { initDb, loadDb, saveDb, nextId, now } = require('./db');
 const { hashPassword, verifyPassword, signToken, verifyToken } = require('./auth');
@@ -207,6 +207,9 @@ app.post('/api/auth/login', (req, res) => {
   });
 });
 
+app.get('/api/auth/me', auth, (req, res) => {
+  res.json({ success: true, data: sanitizeUser(req.user) });
+});
 
 app.get('/api/shop/home', (_req, res) => {
   const db = loadDb();
@@ -331,6 +334,30 @@ app.patch('/api/products/:id/toggle', auth, requireRoles('ADMIN'), (req, res) =>
 });
 
 // Dashboard & alerts
+app.get('/api/dashboard/summary', auth, requireRoles('ADMIN', 'TRABAJADOR'), (req, res) => {
+  const db = req.db;
+  const totalInventoryValue = db.products.reduce((sum, p) => sum + p.salePrice * p.stock, 0);
+  res.json({
+    totalProducts: db.products.length,
+    totalCategories: db.categories.length,
+    totalBrands: db.brands.length,
+    totalSuppliers: db.suppliers.length,
+    lowStock: db.products.filter(p => p.stock <= p.minimumStock).length,
+    inventoryValue: totalInventoryValue,
+    recentMovements: db.movements.slice(-5).reverse().map(m => {
+      const product = db.products.find(p => p.id === m.productId);
+      const user = db.users.find(u => u.id === m.userId);
+      return {
+        id: m.id,
+        productName: product?.name || '',
+        type: m.type,
+        quantity: m.quantity,
+        userName: user ? `${user.firstName} ${user.lastName}` : '',
+        createdAt: m.createdAt
+      };
+    })
+  });
+});
 
 app.get('/api/alerts/low-stock', auth, requireRoles('ADMIN', 'TRABAJADOR'), (req, res) => {
   const db = req.db;
@@ -686,435 +713,61 @@ const buildSafeUser = (user) => ({
   rol: user.rol
 })
 
-
-app.get('/api/users/workers', auth, (req, res) => {
-  if (req.user.role !== 'ADMIN') {
-    return res.status(403).json({
-      success: false,
-      message: 'No autorizado'
-    });
-  }
-
-  const db = loadDb();
-
-  const workers = db.users
-    .filter((u) => u.role === 'TRABAJADOR')
-    .map((u) => presentWorker(u));
-
-  return res.json({
-    success: true,
-    data: workers
-  });
-});
-
-app.post('/api/users/workers', auth, (req, res) => {
-  if (req.user.role !== 'ADMIN') {
-    return res.status(403).json({
-      success: false,
-      message: 'No autorizado'
-    });
-  }
-
-  const db = loadDb();
-
-  const {
-    firstName = '',
-    lastName = '',
-    email = '',
-    password = '',
-    phone = '',
-    address = ''
-  } = req.body || {};
-
-  if (!String(firstName).trim() || !String(lastName).trim() || !String(email).trim() || !String(password).trim()) {
-    return res.status(400).json({
-      success: false,
-      message: 'Nombre, apellido, correo y contraseÃ±a son obligatorios'
-    });
-  }
-
-  const exists = db.users.some(
-    (u) => String(u.email).toLowerCase() === String(email).trim().toLowerCase()
-  );
-
-  if (exists) {
-    return res.status(400).json({
-      success: false,
-      message: 'Ya existe un usuario con ese correo'
-    });
-  }
-
-  const nextId =
-    db.users.length > 0
-      ? Math.max(...db.users.map((u) => Number(u.id) || 0)) + 1
-      : 1;
-
-  const newWorker = {
-    id: nextId,
-    firstName: String(firstName).trim(),
-    lastName: String(lastName).trim(),
-    email: String(email).trim().toLowerCase(),
-    password: String(password).trim(),
-    phone: String(phone).trim(),
-    address: String(address).trim(),
-    role: 'TRABAJADOR',
-    active: true,
-    createdAt: new Date().toISOString()
-  };
-
-  db.users.push(newWorker);
-  saveDb(db);
-
-  return res.status(201).json({
-    success: true,
-    message: 'Trabajador creado correctamente',
-    data: presentWorker(newWorker)
-  });
-});
-
-app.put('/api/users/workers/:id', auth, (req, res) => {
-  if (req.user.role !== 'ADMIN') {
-    return res.status(403).json({
-      success: false,
-      message: 'No autorizado'
-    });
-  }
-
-  const db = loadDb();
-  const id = Number(req.params.id);
-
-  const worker = db.users.find((u) => Number(u.id) === id && u.role === 'TRABAJADOR');
-
-  if (!worker) {
-    return res.status(404).json({
-      success: false,
-      message: 'Trabajador no encontrado'
-    });
-  }
-
-  const {
-    firstName = '',
-    lastName = '',
-    email = '',
-    password = '',
-    phone = '',
-    address = '',
-    active = true
-  } = req.body || {};
-
-  if (!String(firstName).trim() || !String(lastName).trim() || !String(email).trim()) {
-    return res.status(400).json({
-      success: false,
-      message: 'Nombre, apellido y correo son obligatorios'
-    });
-  }
-
-  const exists = db.users.some(
-    (u) =>
-      Number(u.id) !== id &&
-      String(u.email).toLowerCase() === String(email).trim().toLowerCase()
-  );
-
-  if (exists) {
-    return res.status(400).json({
-      success: false,
-      message: 'Ya existe otro usuario con ese correo'
-    });
-  }
-
-  worker.firstName = String(firstName).trim();
-  worker.lastName = String(lastName).trim();
-  worker.email = String(email).trim().toLowerCase();
-  worker.phone = String(phone).trim();
-  worker.address = String(address).trim();
-  worker.active = Boolean(active);
-
-  if (String(password).trim()) {
-    worker.password = String(password).trim();
-  }
-
-  saveDb(db);
-
-  return res.json({
-    success: true,
-    message: 'Trabajador actualizado correctamente',
-    data: presentWorker(worker)
-  });
-});
-
-app.get('/api/admin/stats', auth, (req, res) => {
-  if (req.user.role !== 'ADMIN') {
-    return res.status(403).json({
-      success: false,
-      message: 'No autorizado'
-    });
-  }
-
-  const db = loadDb();
-
-  const products = Array.isArray(db.products) ? db.products : [];
-  const users = Array.isArray(db.users) ? db.users : [];
-  const orders = Array.isArray(db.orders) ? db.orders : [];
-  const payments = Array.isArray(db.payments) ? db.payments : [];
-  const invoices = Array.isArray(db.invoices) ? db.invoices : [];
-
-  const workers = users.filter((u) => u.role === 'TRABAJADOR');
-  const customers = users.filter((u) => u.role === 'CLIENTE');
-  const lowStock = products.filter((p) => Number(p.stock || 0) <= 5);
-  const pendingPayments = payments.filter((p) => String(p.status || '').toUpperCase() === 'PENDIENTE');
-
-  const totalSales = orders.reduce((acc, item) => acc + Number(item.total || 0), 0);
-
-  return res.json({
-    success: true,
-    data: {
-      totalProducts: products.length,
-      totalWorkers: workers.length,
-      totalCustomers: customers.length,
-      totalOrders: orders.length,
-      totalPayments: payments.length,
-      totalInvoices: invoices.length,
-      lowStockCount: lowStock.length,
-      pendingPaymentsCount: pendingPayments.length,
-      totalSales
-    }
-  });
-});
-
-app.get('/api/dashboard/summary', auth, (req, res) => {
-  if (!['ADMIN', 'TRABAJADOR'].includes(req.user.role)) {
-    return res.status(403).json({
-      success: false,
-      message: 'No autorizado'
-    });
-  }
-
-  const db = loadDb();
-
-  const products = Array.isArray(db.products) ? db.products : [];
-  const categories = Array.isArray(db.categories) ? db.categories : [];
-  const brands = Array.isArray(db.brands) ? db.brands : [];
-  const suppliers = Array.isArray(db.suppliers) ? db.suppliers : [];
-  const users = Array.isArray(db.users) ? db.users : [];
-  const movements = Array.isArray(db.movements) ? db.movements : [];
-  const orders = Array.isArray(db.orders) ? db.orders : [];
-  const payments = Array.isArray(db.payments) ? db.payments : [];
-  const invoices = Array.isArray(db.invoices) ? db.invoices : [];
-
-  const sortedDesc = (rows) =>
-    [...rows].sort((a, b) => {
-      const da = new Date(a.createdAt || a.issuedAt || 0).getTime();
-      const dbv = new Date(b.createdAt || b.issuedAt || 0).getTime();
-      return dbv - da;
-    });
-
-  const lowStockProducts = products
-    .filter((p) => p.active !== false)
-    .filter((p) => Number(p.stock || 0) <= Number(p.minimumStock || 5))
-    .map((p) => ({
-      id: p.id,
-      code: p.code,
-      name: p.name,
-      stock: Number(p.stock || 0),
-      minimumStock: Number(p.minimumStock || 0),
-      categoryName: p.categoryName || '',
-      brandName: p.brandName || ''
-    }));
-
-  const recentMovements = sortedDesc(movements)
-    .slice(0, 8)
-    .map((m) => ({
-      id: m.id,
-      productName: m.productName || '',
-      productCode: m.productCode || '',
-      type: m.type || '',
-      quantity: Number(m.quantity || 0),
-      userName: m.userName || '',
-      createdAt: m.createdAt || null
-    }));
-
-  const recentOrders = sortedDesc(orders)
-    .slice(0, 6)
-    .map((o) => ({
-      orderId: o.orderId || o.id,
-      orderNumber: o.orderNumber || o.number || '',
-      customerName: o.customerName || '',
-      status: o.status || '',
-      total: Number(o.total || 0),
-      createdAt: o.createdAt || null
-    }));
-
-  const recentPayments = sortedDesc(payments)
-    .slice(0, 6)
-    .map((p) => ({
-      paymentId: p.paymentId || p.id,
-      orderNumber: p.orderNumber || p.orderId || '',
-      amount: Number(p.amount || 0),
-      method: p.method || '',
-      status: p.status || '',
-      createdAt: p.createdAt || null
-    }));
-
-  const totalSales = orders
-    .filter((o) => String(o.status || '').toUpperCase() !== 'CANCELADO')
-    .reduce((acc, item) => acc + Number(item.total || 0), 0);
-
-  const inventoryValue = products.reduce((acc, item) => {
-    return acc + (Number(item.stock || 0) * Number(item.purchasePrice || 0));
-  }, 0);
-
-  return res.json({
-    success: true,
-    data: {
-      totalProducts: products.length,
-      totalCategories: categories.length,
-      totalBrands: brands.length,
-      totalSuppliers: suppliers.length,
-      totalWorkers: users.filter((u) => u.role === 'TRABAJADOR').length,
-      totalCustomers: users.filter((u) => u.role === 'CLIENTE').length,
-      totalOrders: orders.length,
-      totalPayments: payments.length,
-      totalInvoices: invoices.length,
-      lowStock: lowStockProducts.length,
-      pendingPayments: payments.filter((p) => String(p.status || '').toUpperCase() === 'PENDIENTE').length,
-      totalSales,
-      inventoryValue,
-      lowStockProducts,
-      recentMovements,
-      recentOrders,
-      recentPayments
-    }
-  });
-});
-
 app.get('/api/auth/me', auth, (req, res) => {
-  const db = loadDb();
-  const currentUser = db.users.find((u) => Number(u.id) === Number(req.user.id));
+  const user = users.find((u) => u.id === req.user.id)
 
-  if (!currentUser) {
+  if (!user) {
     return res.status(404).json({
       success: false,
       message: 'Usuario no encontrado'
-    });
+    })
   }
 
   return res.json({
     success: true,
-    data: sanitizeUser(currentUser)
-  });
-});
+    data: buildSafeUser(user)
+  })
+})
 
 app.put('/api/users/profile', auth, (req, res) => {
-  const db = loadDb();
-  const currentUser = db.users.find((u) => Number(u.id) === Number(req.user.id));
+  const user = users.find((u) => u.id === req.user.id)
 
-  if (!currentUser) {
+  if (!user) {
     return res.status(404).json({
       success: false,
       message: 'Usuario no encontrado'
-    });
+    })
   }
 
   const {
-    firstName = '',
-    lastName = '',
-    email = '',
-    phone = '',
-    address = ''
-  } = req.body || {};
+    nombre = '',
+    apellido = '',
+    telefono = '',
+    direccion = ''
+  } = req.body || {}
 
-  if (!String(firstName).trim() || !String(lastName).trim() || !String(email).trim()) {
+  if (!nombre.trim() || !apellido.trim()) {
     return res.status(400).json({
       success: false,
-      message: 'Nombre, apellido y correo son obligatorios'
-    });
+      message: 'Nombre y apellido son obligatorios'
+    })
   }
 
-  const exists = db.users.some(
-    (u) =>
-      Number(u.id) !== Number(currentUser.id) &&
-      String(u.email).toLowerCase() === String(email).trim().toLowerCase()
-  );
-
-  if (exists) {
-    return res.status(400).json({
-      success: false,
-      message: 'Ya existe otro usuario con ese correo'
-    });
-  }
-
-  currentUser.firstName = String(firstName).trim();
-  currentUser.lastName = String(lastName).trim();
-  currentUser.email = String(email).trim().toLowerCase();
-  currentUser.phone = String(phone).trim();
-  currentUser.address = String(address).trim();
-
-  saveDb(db);
+  user.nombre = nombre.trim()
+  user.apellido = apellido.trim()
+  user.telefono = telefono.trim()
+  user.direccion = direccion.trim()
 
   return res.json({
     success: true,
     message: 'Perfil actualizado correctamente',
-    data: sanitizeUser(currentUser)
-  });
-});
-
-app.put('/api/users/profile/password', auth, (req, res) => {
-  const db = loadDb();
-  const currentUser = db.users.find((u) => Number(u.id) === Number(req.user.id));
-
-  if (!currentUser) {
-    return res.status(404).json({
-      success: false,
-      message: 'Usuario no encontrado'
-    });
-  }
-
-  const {
-    currentPassword = '',
-    newPassword = ''
-  } = req.body || {};
-
-  if (!String(currentPassword).trim() || !String(newPassword).trim()) {
-    return res.status(400).json({
-      success: false,
-      message: 'La contraseña actual y la nueva contraseña son obligatorias'
-    });
-  }
-
-  if (String(currentUser.password) !== String(currentPassword)) {
-    return res.status(400).json({
-      success: false,
-      message: 'La contraseña actual no es correcta'
-    });
-  }
-
-  if (String(newPassword).trim().length < 6) {
-    return res.status(400).json({
-      success: false,
-      message: 'La nueva contraseña debe tener al menos 6 caracteres'
-    });
-  }
-
-  currentUser.password = String(newPassword).trim();
-  saveDb(db);
-
-  return res.json({
-    success: true,
-    message: 'Contraseña actualizada correctamente'
-  });
-});
+    data: buildSafeUser(user)
+  })
+})
 
 app.listen(PORT, () => {
   console.log(`Backend licoreria corriendo en http://localhost:${PORT}`);
 });
-
-
-
-
-
-
-
-
 
 
 

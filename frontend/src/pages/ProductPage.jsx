@@ -1,87 +1,183 @@
-import React, { useEffect, useState } from 'react';
+﻿import React, { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { api } from '../api';
 import { getAuth } from '../auth';
 
+function money(value) {
+  return `$${Number(value || 0).toLocaleString('es-CO')}`;
+}
+
 export default function ProductPage() {
   const { id } = useParams();
-  const [product, setProduct] = useState(null);
-  const [qty, setQty] = useState(1);
-  const [message, setMessage] = useState(null);
   const navigate = useNavigate();
+  const { user } = getAuth();
+
+  const [product, setProduct] = useState(null);
+  const [error, setError] = useState('');
+  const [msg, setMsg] = useState(null);
+  const [quantity, setQuantity] = useState(1);
+
+  async function load() {
+    try {
+      setError('');
+      const { data } = await api.get(`/shop/products/${id}`);
+      setProduct(data?.data || data);
+    } catch (err) {
+      setError(err.response?.data?.message || 'No se pudo cargar el producto.');
+    }
+  }
 
   useEffect(() => {
-    api.get(`/shop/products/${id}`).then(({ data }) => setProduct(data));
+    load();
   }, [id]);
 
-  async function addToCart() {
-    const { user } = getAuth();
+  async function addToCart(goCheckout = false) {
     if (!user || user.role !== 'CLIENTE') {
       navigate('/login');
       return;
     }
+
     try {
-      const { data } = await api.post('/cart/items', { productId: Number(id), quantity: qty });
-      setMessage({ type: 'success', text: data.message });
+      await api.post('/cart/items', {
+        productId: product.id,
+        quantity: Number(quantity)
+      });
+
+      if (goCheckout) {
+        navigate('/checkout');
+        return;
+      }
+
+      setMsg({ type: 'success', text: 'Producto agregado al carrito.' });
     } catch (err) {
-      setMessage({ type: 'error', text: err.response?.data?.message || 'No se pudo agregar al carrito' });
+      setMsg({
+        type: 'error',
+        text: err.response?.data?.message || 'No se pudo agregar el producto al carrito.'
+      });
     }
   }
 
-  if (!product) return <div className="container page">Cargando...</div>;
+  if (error) {
+    return (
+      <div className="container page">
+        <div className="notice error">{error}</div>
+      </div>
+    );
+  }
+
+  if (!product) {
+    return (
+      <div className="container page">
+        <div className="notice">Cargando producto...</div>
+      </div>
+    );
+  }
+
+  const lowStock = Number(product.stock || 0) <= Number(product.minimumStock || 0);
 
   return (
     <div className="container page">
-      {message && <div className={`notice ${message.type}`}>{message.text}</div>}
-      <div className="split">
+      {msg && <div className={`notice ${msg.type}`}>{msg.text}</div>}
+
+      <div className="grid-2" style={{ alignItems: 'start', gap: 20 }}>
         <section className="card">
-          <div className="product-image" style={{height:420}}>{product.name.charAt(0)}</div>
+          <div
+            style={{
+              width: '100%',
+              height: 420,
+              borderRadius: 18,
+              overflow: 'hidden',
+              background: 'rgba(255,255,255,0.03)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center'
+            }}
+          >
+            {product.imageUrl ? (
+              <img
+                src={product.imageUrl}
+                alt={product.name}
+                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+              />
+            ) : (
+              <div style={{ fontSize: 80, fontWeight: 800, color: '#d4af37' }}>
+                {String(product.name || 'P').charAt(0)}
+              </div>
+            )}
+          </div>
         </section>
+
         <section className="card">
-          <div className="small">{product.brandName} · {product.categoryName}</div>
-          <h1>{product.name}</h1>
-          <p>{product.description}</p>
+          <div className="small" style={{ marginBottom: 8 }}>
+            {product.brandName} · {product.categoryName}
+          </div>
+
+          <h1 style={{ marginBottom: 10 }}>{product.name}</h1>
+
+          <div className="stack" style={{ gap: 10, flexWrap: 'wrap', marginBottom: 14 }}>
+            <span className={`badge ${product.active ? 'success' : 'danger'}`}>
+              {product.active ? 'Disponible' : 'Inactivo'}
+            </span>
+
+            {lowStock && (
+              <span className="badge warning">
+                Stock bajo
+              </span>
+            )}
+          </div>
+
+          <p style={{ marginBottom: 18 }}>
+            {product.description || 'Producto disponible en el catálogo.'}
+          </p>
+
           <div className="grid grid-2">
-            <div className="card"><div className="small">Volumen</div><strong>{product.volumeMl} ml</strong></div>
-            <div className="card"><div className="small">Alcohol</div><strong>{product.alcohol}°</strong></div>
-            <div className="card"><div className="small">Proveedor</div><strong>{product.supplierName}</strong></div>
-            <div className="card"><div className="small">Stock</div><strong>{product.stock}</strong></div>
+            <div className="card">
+              <div className="small">Precio de venta</div>
+              <strong style={{ fontSize: 24 }}>{money(product.salePrice)}</strong>
+            </div>
+
+            <div className="card">
+              <div className="small">Volumen</div>
+              <strong>{product.volumeMl} ml</strong>
+            </div>
+
+            <div className="card">
+              <div className="small">Alcohol</div>
+              <strong>{product.alcohol}°</strong>
+            </div>
+
+            <div className="card">
+              <div className="small">Stock actual</div>
+              <strong>{product.stock}</strong>
+            </div>
           </div>
-          <hr className="sep" />
-          <h2>${product.salePrice.toLocaleString('es-CO')}</h2>
-          <div className="stack">
-            <button className="btn btn-outline" onClick={()=>setQty(Math.max(1, qty-1))}>-</button>
-            <input value={qty} onChange={e=>setQty(Number(e.target.value) || 1)} style={{width:90}} />
-            <button className="btn btn-outline" onClick={()=>setQty(Math.min(product.stock, qty+1))}>+</button>
+
+          <div className="form-group" style={{ marginTop: 18 }}>
+            <label>Cantidad</label>
+            <input
+              type="number"
+              min="1"
+              max={Math.max(Number(product.stock || 1), 1)}
+              value={quantity}
+              onChange={(e) => setQuantity(e.target.value)}
+            />
           </div>
-          <div className="stack" style={{marginTop:14}}>
-            <button className="btn btn-primary" onClick={addToCart}>Agregar al carrito</button>
-            <Link className="btn btn-outline" to="/cart">Ver carrito</Link>
-            <Link className="btn btn-outline" to="/shop/products">Volver</Link>
+
+          <div className="stack" style={{ gap: 10, marginTop: 18, flexWrap: 'wrap' }}>
+            <button className="btn btn-primary" onClick={() => addToCart(false)}>
+              Agregar al carrito
+            </button>
+
+            <button className="btn btn-outline" onClick={() => addToCart(true)}>
+              Comprar ahora
+            </button>
+
+            <Link className="btn btn-outline" to="/shop/products">
+              Volver al catálogo
+            </Link>
           </div>
         </section>
       </div>
-
-      {product.related?.length > 0 && (
-        <section className="page">
-          <h2>Relacionados</h2>
-          <div className="product-grid">
-            {product.related.map(r => (
-              <article key={r.id} className="product-card">
-                <div className="product-image">{r.name.charAt(0)}</div>
-                <div className="product-body">
-                  <div className="small">{r.brandName}</div>
-                  <h3>{r.name}</h3>
-                  <div className="stack" style={{justifyContent:'space-between', alignItems:'center'}}>
-                    <strong>${r.salePrice?.toLocaleString('es-CO')}</strong>
-                    <Link className="btn btn-primary" to={`/shop/products/${r.id}`}>Ver</Link>
-                  </div>
-                </div>
-              </article>
-            ))}
-          </div>
-        </section>
-      )}
     </div>
   );
 }
