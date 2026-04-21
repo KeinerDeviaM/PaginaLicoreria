@@ -1,0 +1,2042 @@
+{
+  "counters": {
+    "users": 11,
+    "categories": 6,
+    "brands": 30,
+    "suppliers": 4,
+    "products": 30,
+    "movements": 38,
+    "orders": 6,
+    "orderDetails": 7,
+    "cartItems": 9,
+    "payments": 6,
+    "invoices": 4,
+    "notifications": 23,
+    "procurementOrders": 4
+  },
+  "users": [
+    {
+      "id": 1,
+      "firstName": "Admin",
+      "lastName": "Sistema",
+      "email": "admin@licoreria.com",
+      "phone": "3000000001",
+      "address": "Oficina principal",
+      "passwordHash": "d4b5dfe501074bd0d87cb8a7acba65a2:b0466fa009263ba8f2db50e53c736e38e3563b13506806f02ad2291661d26e3c2dc011b0fe4a3e104055cdd05498055f4ee0d84409863842af0c62f39fdc205f",
+      "role": "ADMIN",
+      "active": true,
+      "createdAt": "2026-04-17T04:32:58.163Z"
+    },
+    {
+      "id": 2,
+      "firstName": "Trabajador",
+      "lastName": "Licoreria",
+      "email": "trabajador@licoreria.com",
+      "phone": "3000000002",
+      "address": "Sucursal principal",
+      "passwordHash": "e5201887f60ba824eb9353e12541a560:fc5dc659eb60c2171fceae410675645e1cf7ca5bcdfb10067c17a63b6f0fd2edba249d2105f2990e447a308fd63452f3706cdc29140699cf03e7957c52e8a357",
+      "role": "TRABAJADOR",
+      "active": true,
+      "createdAt": "2026-04-17T04:32:58.229Z"
+    },
+    {
+      "id": 3,
+      "firstName": "Cliente",
+      "lastName": "Demo",
+      "email": "cliente@licoreria.com",
+      "phone": "3000000003",
+      "address": "Calle 123",
+      "passwordHash": "b99c7efabea34f13b6f5cd7123192fa8:6743318dfa0ae33f247f3049a3732a753a7c0a2d476ba829a77995d7cb633d2d649e68b4f7fd74eaaf675117e531b032cf20e2b9373e1672b74483e92a557bcc",
+      "role": "CLIENTE",
+      "active": true,
+      "createdAt": "2026-04-17T04:32:58.280Z"
+    },
+    {
+      "id": 4,
+      "firstName": "Keiner",
+      "lastName": "Devia",
+      "email": "keiner@gmail.com",
+      "phone": "3157398252",
+      "address": "Armenia",
+      "passwordHash": "bf644d9f623c1428f097347357621c1f:955db6f417181e3306dfec1d1e7429c72c1d0e04ba9d05591f4fc2aff48ead150166697b75ecf629b87c6fe2a92c4c5ef99f1c14834a3c4e985cca73cfe68eda",
+      "role": "CLIENTE",
+      "active": true,
+      "createdAt": "2026-04-17T04:32:58.333Z"
+    },
+    {
+      "id": 5,
+      "firstName": "Laura",
+      "lastName": "Vendedora",
+      "email": "laura.trabajadora@licoreria.com",
+      "phone": "3115556677",
+      "address": "Armenia Centro",
+      "passwordHash": "def3838e23b8fea702576002877e2113:4d16f396efdf6873fa2357ea3fc7e71cc5f1d55549ae9f32622646b34f45dc287efbeddfc9e2cc09ce21b69bda57c90f7288140b6d4c3969811f6ac55bfee571",
+      "role": "TRABAJADOR",
+      "active": true,
+      "createdAt": "2026-04-17T04:32:58.386Z"
+    },
+    {
+      "id": 6,
+      "firstName": "Santiago",
+      "lastName": "Cajero",
+      "email": "santiago.trabajador@licoreria.com",
+      "phone": "3134442299",
+      "address": "Armenia Norte",
+      "passwordHash": "50a99b860b5d6dcf7bf73fbcec8e0b6d:769bf40ae6b31e7e3bc7afb275c854c79cef6a81bd01055041f3b15b440c54aa718d56bd1a43edd15aca52fd769e4b94cd679d2dbdf2e71bb812901bffd71e94",
+      "role": "TRABAJADOR",
+      "active": true,
+      "createdAt": "2026-04-17T04:32:58.439Z"
+    },
+    {
+      "id": 7,
+      "firstName": "andres",
+      "lastName": "camilo",
+      "email": "anfdres@licoreria.com",
+      "phone": "255382",
+      "address": "eeree",
+      "passwordHash": "460a2ead0913011a6a7e68fb1abaa45f:0dbff59b41feddead1d63135fe5fca41c4cb3c2634af98b75f926452ff18ba1e4d688186853d72d8bfb63aaa409523d82b0712db69875a8e891b4276fe6476dd",
+      "role": "TRABAJADOR",
+      "active": true,
+      "createdAt": "2026-04-17T04:50:02.260Z"
+    },
+    {
+      "id": 8,
+      "firstName": "sebastian",
+      "lastName": "cano",
+      "email": "cano123@gmail.com",
+      "phone": "3137626569",
+      "address": "armenia",
+      "passwordHash": "a129574d7550f46f0133bd02229b5d18:106a54795fe617ab315472a6008e34d6938987ef16e377b78d7841d6dfff56a7bfb1efbff437d89469d45697aa5714a6cacaf7c710b4d7012b9a4e282d617c79",
+      "role": "CLIENTE",
+      "active": true,
+      "createdAt": "2026-04-17T18:11:18.101Z"
+    },
+    {
+      "id": 9,
+      "firstName": "Jorge",
+      "lastName": "Cano",
+      "email": "jorge@licoreria.com",
+      "phone": "3231582",
+      "address": "Armenia",
+      "passwordHash": "dfc1286f597473650f8209e9d911e7b3:47b08002f7c99cec9f47c073f569fe5820d1dc54b2b1ee07b0fe8ed4b0c711431dafb9f94729a111a740475a0e66049e00a1695e3b1e93e8013a201dd19243f8",
+      "role": "TRABAJADOR",
+      "active": true,
+      "createdAt": "2026-04-17T18:23:18.028Z"
+    },
+    {
+      "id": 10,
+      "firstName": "ficho",
+      "lastName": "pinzon",
+      "email": "ficho@licorera",
+      "phone": "554",
+      "address": "armenia",
+      "passwordHash": "d5d4e754bfbc6da931d57e3406ee405e:3d0ee65b1998a584fe97af04ec2129ff310baefb9ddf59546fc54f5eaa5b6883c6c21344b99c4f93b755faaf67a3bec14bc382d12155e20eedb481417dec16f9",
+      "role": "CLIENTE",
+      "active": true,
+      "createdAt": "2026-04-17T19:29:38.652Z"
+    },
+    {
+      "id": 11,
+      "firstName": "dd",
+      "lastName": "ada",
+      "email": "ad@licoreria.com",
+      "phone": "318523984",
+      "address": "ssss",
+      "passwordHash": "fa0c351b9dc59162c051232919e93fa6:d62d27a3cdaf9466432d2a6792201e232f7123b11cd85aba2f48245c79b31874d952d3e4c669a0b1532dcf32dfb253b3f6eb6f1be3c06ddff77ed08fc236264d",
+      "role": "CLIENTE",
+      "active": true,
+      "createdAt": "2026-04-21T03:14:13.700Z"
+    }
+  ],
+  "categories": [
+    {
+      "id": 1,
+      "name": "Whisky",
+      "description": "Whiskys premium y blend",
+      "active": true
+    },
+    {
+      "id": 2,
+      "name": "Ron",
+      "description": "Rones nacionales e importados",
+      "active": true
+    },
+    {
+      "id": 3,
+      "name": "Vodka",
+      "description": "Vodkas clásicos y premium",
+      "active": true
+    },
+    {
+      "id": 4,
+      "name": "Vino",
+      "description": "Vinos tintos, blancos y rosados",
+      "active": true
+    },
+    {
+      "id": 5,
+      "name": "Cerveza",
+      "description": "Cervezas artesanales e importadas",
+      "active": true
+    },
+    {
+      "id": 6,
+      "name": "Tequila",
+      "description": "Tequilas reposados y añejos",
+      "active": true
+    }
+  ],
+  "brands": [
+    {
+      "id": 1,
+      "name": "Macallan",
+      "description": "Macallan marca destacada",
+      "active": true
+    },
+    {
+      "id": 2,
+      "name": "Johnnie Walker",
+      "description": "Johnnie Walker marca destacada",
+      "active": true
+    },
+    {
+      "id": 3,
+      "name": "Chivas Regal",
+      "description": "Chivas Regal marca destacada",
+      "active": true
+    },
+    {
+      "id": 4,
+      "name": "Jack Daniels",
+      "description": "Jack Daniels marca destacada",
+      "active": true
+    },
+    {
+      "id": 5,
+      "name": "Ballantines",
+      "description": "Ballantines marca destacada",
+      "active": true
+    },
+    {
+      "id": 6,
+      "name": "Havana Club",
+      "description": "Havana Club marca destacada",
+      "active": true
+    },
+    {
+      "id": 7,
+      "name": "Diplomático",
+      "description": "Diplomático marca destacada",
+      "active": true
+    },
+    {
+      "id": 8,
+      "name": "Santa Teresa",
+      "description": "Santa Teresa marca destacada",
+      "active": true
+    },
+    {
+      "id": 9,
+      "name": "Bacardí",
+      "description": "Bacardí marca destacada",
+      "active": true
+    },
+    {
+      "id": 10,
+      "name": "Zacapa",
+      "description": "Zacapa marca destacada",
+      "active": true
+    },
+    {
+      "id": 11,
+      "name": "Grey Goose",
+      "description": "Grey Goose marca destacada",
+      "active": true
+    },
+    {
+      "id": 12,
+      "name": "Absolut",
+      "description": "Absolut marca destacada",
+      "active": true
+    },
+    {
+      "id": 13,
+      "name": "Smirnoff",
+      "description": "Smirnoff marca destacada",
+      "active": true
+    },
+    {
+      "id": 14,
+      "name": "Belvedere",
+      "description": "Belvedere marca destacada",
+      "active": true
+    },
+    {
+      "id": 15,
+      "name": "Cîroc",
+      "description": "Cîroc marca destacada",
+      "active": true
+    },
+    {
+      "id": 16,
+      "name": "Concha y Toro",
+      "description": "Concha y Toro marca destacada",
+      "active": true
+    },
+    {
+      "id": 17,
+      "name": "Santa Helena",
+      "description": "Santa Helena marca destacada",
+      "active": true
+    },
+    {
+      "id": 18,
+      "name": "Trapiche",
+      "description": "Trapiche marca destacada",
+      "active": true
+    },
+    {
+      "id": 19,
+      "name": "Casillero del Diablo",
+      "description": "Casillero del Diablo marca destacada",
+      "active": true
+    },
+    {
+      "id": 20,
+      "name": "Marqués de Riscal",
+      "description": "Marqués de Riscal marca destacada",
+      "active": true
+    },
+    {
+      "id": 21,
+      "name": "Corona",
+      "description": "Corona marca destacada",
+      "active": true
+    },
+    {
+      "id": 22,
+      "name": "Heineken",
+      "description": "Heineken marca destacada",
+      "active": true
+    },
+    {
+      "id": 23,
+      "name": "Stella Artois",
+      "description": "Stella Artois marca destacada",
+      "active": true
+    },
+    {
+      "id": 24,
+      "name": "Club Colombia",
+      "description": "Club Colombia marca destacada",
+      "active": true
+    },
+    {
+      "id": 25,
+      "name": "Budweiser",
+      "description": "Budweiser marca destacada",
+      "active": true
+    },
+    {
+      "id": 26,
+      "name": "Don Julio",
+      "description": "Don Julio marca destacada",
+      "active": true
+    },
+    {
+      "id": 27,
+      "name": "José Cuervo",
+      "description": "José Cuervo marca destacada",
+      "active": true
+    },
+    {
+      "id": 28,
+      "name": "Patrón",
+      "description": "Patrón marca destacada",
+      "active": true
+    },
+    {
+      "id": 29,
+      "name": "1800",
+      "description": "1800 marca destacada",
+      "active": true
+    },
+    {
+      "id": 30,
+      "name": "Herradura",
+      "description": "Herradura marca destacada",
+      "active": true
+    }
+  ],
+  "suppliers": [
+    {
+      "id": 1,
+      "name": "Distribuciones Premium",
+      "contactName": "Laura Pérez",
+      "email": "ventas@premium.com",
+      "phone": "3101111111",
+      "address": "Bogotá",
+      "city": "Bogotá",
+      "shippingCostBase": 18000,
+      "packagingCostBase": 6000,
+      "active": true
+    },
+    {
+      "id": 2,
+      "name": "Importadora Gold",
+      "contactName": "Mario Díaz",
+      "email": "contacto@gold.com",
+      "phone": "3102222222",
+      "address": "Medellín",
+      "city": "Medellín",
+      "shippingCostBase": 22000,
+      "packagingCostBase": 7000,
+      "active": true
+    },
+    {
+      "id": 3,
+      "name": "Vinos del Mundo",
+      "contactName": "Andrea Ruiz",
+      "email": "info@vinosmundo.com",
+      "phone": "3103333333",
+      "address": "Cali",
+      "city": "Cali",
+      "shippingCostBase": 25000,
+      "packagingCostBase": 8000,
+      "active": true
+    },
+    {
+      "id": 4,
+      "name": "Licores Nacionales",
+      "contactName": "Camilo Vargas",
+      "email": "pedidos@nacionales.com",
+      "phone": "3104444444",
+      "address": "Barranquilla",
+      "city": "Barranquilla",
+      "shippingCostBase": 17000,
+      "packagingCostBase": 5000,
+      "active": true
+    }
+  ],
+  "products": [
+    {
+      "id": 1,
+      "categoryId": 1,
+      "brandId": 1,
+      "supplierId": 1,
+      "code": "WH-001",
+      "name": "Macallan Reserva",
+      "description": "Macallan de categoría 1 con presentación profesional para tienda y venta directa.",
+      "imageUrl": "",
+      "volumeMl": 750,
+      "alcohol": 40,
+      "purchasePrice": 145000,
+      "salePrice": 210000,
+      "stock": 0,
+      "minimumStock": 8,
+      "active": true,
+      "unitsSold": 18,
+      "createdAt": "2026-04-17T04:32:58.090Z"
+    },
+    {
+      "id": 2,
+      "categoryId": 1,
+      "brandId": 2,
+      "supplierId": 2,
+      "code": "WH-002",
+      "name": "Johnnie Walker Reserva",
+      "description": "Johnnie Walker de categoría 1 con presentación profesional para tienda y venta directa.",
+      "imageUrl": "",
+      "volumeMl": 750,
+      "alcohol": 40,
+      "purchasePrice": 162000,
+      "salePrice": 235000,
+      "stock": 32,
+      "minimumStock": 10,
+      "active": true,
+      "unitsSold": 1,
+      "createdAt": "2026-04-17T04:32:58.094Z"
+    },
+    {
+      "id": 3,
+      "categoryId": 1,
+      "brandId": 3,
+      "supplierId": 3,
+      "code": "WH-003",
+      "name": "Chivas Regal Reserva",
+      "description": "Chivas Regal de categoría 1 con presentación profesional para tienda y venta directa.",
+      "imageUrl": "",
+      "volumeMl": 750,
+      "alcohol": 40,
+      "purchasePrice": 180000,
+      "salePrice": 260000,
+      "stock": 26,
+      "minimumStock": 12,
+      "active": true,
+      "unitsSold": 2,
+      "createdAt": "2026-04-17T04:32:58.094Z"
+    },
+    {
+      "id": 4,
+      "categoryId": 1,
+      "brandId": 4,
+      "supplierId": 4,
+      "code": "WH-004",
+      "name": "Jack Daniels Reserva",
+      "description": "Jack Daniels de categoría 1 con presentación profesional para tienda y venta directa.",
+      "imageUrl": "",
+      "volumeMl": 750,
+      "alcohol": 40,
+      "purchasePrice": 197000,
+      "salePrice": 286000,
+      "stock": 30,
+      "minimumStock": 14,
+      "active": true,
+      "unitsSold": 3,
+      "createdAt": "2026-04-17T04:32:58.094Z"
+    },
+    {
+      "id": 5,
+      "categoryId": 1,
+      "brandId": 5,
+      "supplierId": 1,
+      "code": "WH-005",
+      "name": "Ballantines Reserva",
+      "description": "Ballantines de categoría 1 con presentación profesional para tienda y venta directa.",
+      "imageUrl": "",
+      "volumeMl": 750,
+      "alcohol": 40,
+      "purchasePrice": 215000,
+      "salePrice": 311000,
+      "stock": 34,
+      "minimumStock": 8,
+      "active": true,
+      "unitsSold": 4,
+      "createdAt": "2026-04-17T04:32:58.094Z"
+    },
+    {
+      "id": 6,
+      "categoryId": 2,
+      "brandId": 6,
+      "supplierId": 2,
+      "code": "RO-006",
+      "name": "Havana Club Reserva",
+      "description": "Havana Club de categoría 2 con presentación profesional para tienda y venta directa.",
+      "imageUrl": "",
+      "volumeMl": 750,
+      "alcohol": 38,
+      "purchasePrice": 55000,
+      "salePrice": 85000,
+      "stock": 38,
+      "minimumStock": 10,
+      "active": true,
+      "unitsSold": 5,
+      "createdAt": "2026-04-17T04:32:58.094Z"
+    },
+    {
+      "id": 7,
+      "categoryId": 2,
+      "brandId": 7,
+      "supplierId": 3,
+      "code": "RO-007",
+      "name": "Diplomático Reserva",
+      "description": "Diplomático de categoría 2 con presentación profesional para tienda y venta directa.",
+      "imageUrl": "",
+      "volumeMl": 750,
+      "alcohol": 38,
+      "purchasePrice": 62000,
+      "salePrice": 95000,
+      "stock": 41,
+      "minimumStock": 12,
+      "active": true,
+      "unitsSold": 7,
+      "createdAt": "2026-04-17T04:32:58.094Z"
+    },
+    {
+      "id": 8,
+      "categoryId": 2,
+      "brandId": 8,
+      "supplierId": 4,
+      "code": "RO-008",
+      "name": "Santa Teresa Reserva",
+      "description": "Santa Teresa de categoría 2 con presentación profesional para tienda y venta directa.",
+      "imageUrl": "",
+      "volumeMl": 750,
+      "alcohol": 38,
+      "purchasePrice": 68000,
+      "salePrice": 105000,
+      "stock": 46,
+      "minimumStock": 14,
+      "active": true,
+      "unitsSold": 0,
+      "createdAt": "2026-04-17T04:32:58.094Z"
+    },
+    {
+      "id": 9,
+      "categoryId": 2,
+      "brandId": 9,
+      "supplierId": 1,
+      "code": "RO-009",
+      "name": "Bacardí Reserva",
+      "description": "Bacardí de categoría 2 con presentación profesional para tienda y venta directa.",
+      "imageUrl": "",
+      "volumeMl": 750,
+      "alcohol": 38,
+      "purchasePrice": 75000,
+      "salePrice": 116000,
+      "stock": 18,
+      "minimumStock": 8,
+      "active": true,
+      "unitsSold": 1,
+      "createdAt": "2026-04-17T04:32:58.094Z"
+    },
+    {
+      "id": 10,
+      "categoryId": 2,
+      "brandId": 10,
+      "supplierId": 2,
+      "code": "RO-010",
+      "name": "Zacapa Reserva",
+      "description": "Zacapa de categoría 2 con presentación profesional para tienda y venta directa.",
+      "imageUrl": "",
+      "volumeMl": 750,
+      "alcohol": 38,
+      "purchasePrice": 81000,
+      "salePrice": 126000,
+      "stock": 22,
+      "minimumStock": 10,
+      "active": true,
+      "unitsSold": 2,
+      "createdAt": "2026-04-17T04:32:58.094Z"
+    },
+    {
+      "id": 11,
+      "categoryId": 3,
+      "brandId": 11,
+      "supplierId": 3,
+      "code": "VO-011",
+      "name": "Grey Goose Reserva",
+      "description": "Grey Goose de categoría 3 con presentación profesional para tienda y venta directa.",
+      "imageUrl": "",
+      "volumeMl": 750,
+      "alcohol": 40,
+      "purchasePrice": 68000,
+      "salePrice": 110000,
+      "stock": 26,
+      "minimumStock": 12,
+      "active": true,
+      "unitsSold": 3,
+      "createdAt": "2026-04-17T04:32:58.094Z"
+    },
+    {
+      "id": 12,
+      "categoryId": 3,
+      "brandId": 12,
+      "supplierId": 4,
+      "code": "VO-012",
+      "name": "Absolut Reserva",
+      "description": "Absolut de categoría 3 con presentación profesional para tienda y venta directa.",
+      "imageUrl": "",
+      "volumeMl": 750,
+      "alcohol": 40,
+      "purchasePrice": 76000,
+      "salePrice": 123000,
+      "stock": 30,
+      "minimumStock": 14,
+      "active": true,
+      "unitsSold": 4,
+      "createdAt": "2026-04-17T04:32:58.094Z"
+    },
+    {
+      "id": 13,
+      "categoryId": 3,
+      "brandId": 13,
+      "supplierId": 1,
+      "code": "VO-013",
+      "name": "Smirnoff Reserva",
+      "description": "Smirnoff de categoría 3 con presentación profesional para tienda y venta directa.",
+      "imageUrl": "",
+      "volumeMl": 750,
+      "alcohol": 40,
+      "purchasePrice": 84000,
+      "salePrice": 136000,
+      "stock": 33,
+      "minimumStock": 8,
+      "active": true,
+      "unitsSold": 6,
+      "createdAt": "2026-04-17T04:32:58.094Z"
+    },
+    {
+      "id": 14,
+      "categoryId": 3,
+      "brandId": 14,
+      "supplierId": 2,
+      "code": "VO-014",
+      "name": "Belvedere Reserva",
+      "description": "Belvedere de categoría 3 con presentación profesional para tienda y venta directa.",
+      "imageUrl": "",
+      "volumeMl": 750,
+      "alcohol": 40,
+      "purchasePrice": 92000,
+      "salePrice": 150000,
+      "stock": 38,
+      "minimumStock": 10,
+      "active": true,
+      "unitsSold": 6,
+      "createdAt": "2026-04-17T04:32:58.094Z"
+    },
+    {
+      "id": 15,
+      "categoryId": 3,
+      "brandId": 15,
+      "supplierId": 3,
+      "code": "VO-015",
+      "name": "Cîroc Reserva",
+      "description": "Cîroc de categoría 3 con presentación profesional para tienda y venta directa.",
+      "imageUrl": "",
+      "volumeMl": 750,
+      "alcohol": 40,
+      "purchasePrice": 101000,
+      "salePrice": 163000,
+      "stock": 42,
+      "minimumStock": 12,
+      "active": true,
+      "unitsSold": 0,
+      "createdAt": "2026-04-17T04:32:58.094Z"
+    },
+    {
+      "id": 16,
+      "categoryId": 4,
+      "brandId": 16,
+      "supplierId": 4,
+      "code": "VI-016",
+      "name": "Concha y Toro Reserva",
+      "description": "Concha y Toro de categoría 4 con presentación profesional para tienda y venta directa.",
+      "imageUrl": "",
+      "volumeMl": 750,
+      "alcohol": 13,
+      "purchasePrice": 42000,
+      "salePrice": 76000,
+      "stock": 46,
+      "minimumStock": 14,
+      "active": true,
+      "unitsSold": 1,
+      "createdAt": "2026-04-17T04:32:58.094Z"
+    },
+    {
+      "id": 17,
+      "categoryId": 4,
+      "brandId": 17,
+      "supplierId": 1,
+      "code": "VI-017",
+      "name": "Santa Helena Reserva",
+      "description": "Santa Helena de categoría 4 con presentación profesional para tienda y venta directa.",
+      "imageUrl": "",
+      "volumeMl": 750,
+      "alcohol": 13,
+      "purchasePrice": 47000,
+      "salePrice": 85000,
+      "stock": 18,
+      "minimumStock": 8,
+      "active": true,
+      "unitsSold": 2,
+      "createdAt": "2026-04-17T04:32:58.094Z"
+    },
+    {
+      "id": 18,
+      "categoryId": 4,
+      "brandId": 18,
+      "supplierId": 2,
+      "code": "VI-018",
+      "name": "Trapiche Reserva",
+      "description": "Trapiche de categoría 4 con presentación profesional para tienda y venta directa.",
+      "imageUrl": "",
+      "volumeMl": 750,
+      "alcohol": 13,
+      "purchasePrice": 52000,
+      "salePrice": 94000,
+      "stock": 0,
+      "minimumStock": 10,
+      "active": true,
+      "unitsSold": 25,
+      "createdAt": "2026-04-17T04:32:58.094Z"
+    },
+    {
+      "id": 19,
+      "categoryId": 4,
+      "brandId": 19,
+      "supplierId": 3,
+      "code": "VI-019",
+      "name": "Casillero del Diablo Reserva",
+      "description": "Casillero del Diablo de categoría 4 con presentación profesional para tienda y venta directa.",
+      "imageUrl": "",
+      "volumeMl": 750,
+      "alcohol": 13,
+      "purchasePrice": 57000,
+      "salePrice": 103000,
+      "stock": 8465,
+      "minimumStock": 12,
+      "active": true,
+      "unitsSold": 1564,
+      "createdAt": "2026-04-17T04:32:58.094Z"
+    },
+    {
+      "id": 20,
+      "categoryId": 4,
+      "brandId": 20,
+      "supplierId": 4,
+      "code": "VI-020",
+      "name": "Marqués de Riscal Reserva",
+      "description": "Marqués de Riscal de categoría 4 con presentación profesional para tienda y venta directa.",
+      "imageUrl": "",
+      "volumeMl": 750,
+      "alcohol": 13,
+      "purchasePrice": 62000,
+      "salePrice": 112000,
+      "stock": 30,
+      "minimumStock": 14,
+      "active": true,
+      "unitsSold": 5,
+      "createdAt": "2026-04-17T04:32:58.094Z"
+    },
+    {
+      "id": 21,
+      "categoryId": 5,
+      "brandId": 21,
+      "supplierId": 1,
+      "code": "CE-021",
+      "name": "Corona Botella",
+      "description": "Corona de categoría 5 con presentación profesional para tienda y venta directa.",
+      "imageUrl": "",
+      "volumeMl": 330,
+      "alcohol": 5,
+      "purchasePrice": 7000,
+      "salePrice": 11000,
+      "stock": 34,
+      "minimumStock": 8,
+      "active": true,
+      "unitsSold": 6,
+      "createdAt": "2026-04-17T04:32:58.094Z"
+    },
+    {
+      "id": 22,
+      "categoryId": 5,
+      "brandId": 22,
+      "supplierId": 2,
+      "code": "CE-022",
+      "name": "Heineken Botella",
+      "description": "Heineken de categoría 5 con presentación profesional para tienda y venta directa.",
+      "imageUrl": "",
+      "volumeMl": 330,
+      "alcohol": 5,
+      "purchasePrice": 7000,
+      "salePrice": 12000,
+      "stock": 38,
+      "minimumStock": 10,
+      "active": true,
+      "unitsSold": 0,
+      "createdAt": "2026-04-17T04:32:58.094Z"
+    },
+    {
+      "id": 23,
+      "categoryId": 5,
+      "brandId": 23,
+      "supplierId": 3,
+      "code": "CE-023",
+      "name": "Stella Artois Botella",
+      "description": "Stella Artois de categoría 5 con presentación profesional para tienda y venta directa.",
+      "imageUrl": "",
+      "volumeMl": 330,
+      "alcohol": 5,
+      "purchasePrice": 8000,
+      "salePrice": 14000,
+      "stock": 42,
+      "minimumStock": 12,
+      "active": true,
+      "unitsSold": 1,
+      "createdAt": "2026-04-17T04:32:58.094Z"
+    },
+    {
+      "id": 24,
+      "categoryId": 5,
+      "brandId": 24,
+      "supplierId": 4,
+      "code": "CE-024",
+      "name": "Club Colombia Botella",
+      "description": "Club Colombia de categoría 5 con presentación profesional para tienda y venta directa.",
+      "imageUrl": "",
+      "volumeMl": 330,
+      "alcohol": 5,
+      "purchasePrice": 9000,
+      "salePrice": 15000,
+      "stock": 46,
+      "minimumStock": 14,
+      "active": true,
+      "unitsSold": 2,
+      "createdAt": "2026-04-17T04:32:58.094Z"
+    },
+    {
+      "id": 25,
+      "categoryId": 5,
+      "brandId": 25,
+      "supplierId": 1,
+      "code": "CE-025",
+      "name": "Budweiser Botella",
+      "description": "Budweiser de categoría 5 con presentación profesional para tienda y venta directa.",
+      "imageUrl": "",
+      "volumeMl": 330,
+      "alcohol": 5,
+      "purchasePrice": 10000,
+      "salePrice": 16000,
+      "stock": 18,
+      "minimumStock": 8,
+      "active": true,
+      "unitsSold": 3,
+      "createdAt": "2026-04-17T04:32:58.094Z"
+    },
+    {
+      "id": 26,
+      "categoryId": 6,
+      "brandId": 26,
+      "supplierId": 2,
+      "code": "TE-026",
+      "name": "Don Julio Reserva",
+      "description": "Don Julio de categoría 6 con presentación profesional para tienda y venta directa.",
+      "imageUrl": "",
+      "volumeMl": 750,
+      "alcohol": 38,
+      "purchasePrice": 98000,
+      "salePrice": 150000,
+      "stock": 22,
+      "minimumStock": 10,
+      "active": true,
+      "unitsSold": 4,
+      "createdAt": "2026-04-17T04:32:58.094Z"
+    },
+    {
+      "id": 27,
+      "categoryId": 6,
+      "brandId": 27,
+      "supplierId": 3,
+      "code": "TE-027",
+      "name": "José Cuervo Reserva",
+      "description": "José Cuervo de categoría 6 con presentación profesional para tienda y venta directa.",
+      "imageUrl": "",
+      "volumeMl": 750,
+      "alcohol": 38,
+      "purchasePrice": 110000,
+      "salePrice": 168000,
+      "stock": 26,
+      "minimumStock": 12,
+      "active": true,
+      "unitsSold": 5,
+      "createdAt": "2026-04-17T04:32:58.094Z"
+    },
+    {
+      "id": 28,
+      "categoryId": 6,
+      "brandId": 28,
+      "supplierId": 4,
+      "code": "TE-028",
+      "name": "Patrón Reserva",
+      "description": "Patrón de categoría 6 con presentación profesional para tienda y venta directa.",
+      "imageUrl": "",
+      "volumeMl": 750,
+      "alcohol": 38,
+      "purchasePrice": 122000,
+      "salePrice": 186000,
+      "stock": 30,
+      "minimumStock": 14,
+      "active": true,
+      "unitsSold": 6,
+      "createdAt": "2026-04-17T04:32:58.094Z"
+    },
+    {
+      "id": 29,
+      "categoryId": 6,
+      "brandId": 29,
+      "supplierId": 1,
+      "code": "TE-029",
+      "name": "1800 Reserva",
+      "description": "1800 de categoría 6 con presentación profesional para tienda y venta directa.",
+      "imageUrl": "",
+      "volumeMl": 750,
+      "alcohol": 38,
+      "purchasePrice": 133000,
+      "salePrice": 204000,
+      "stock": 34,
+      "minimumStock": 8,
+      "active": true,
+      "unitsSold": 0,
+      "createdAt": "2026-04-17T04:32:58.094Z"
+    },
+    {
+      "id": 30,
+      "categoryId": 6,
+      "brandId": 30,
+      "supplierId": 2,
+      "code": "TE-030",
+      "name": "Herradura Reserva",
+      "description": "Herradura de categoría 6 con presentación profesional para tienda y venta directa.",
+      "imageUrl": "",
+      "volumeMl": 750,
+      "alcohol": 38,
+      "purchasePrice": 145000,
+      "salePrice": 222000,
+      "stock": 38,
+      "minimumStock": 10,
+      "active": true,
+      "unitsSold": 1,
+      "createdAt": "2026-04-17T04:32:58.094Z"
+    }
+  ],
+  "movements": [
+    {
+      "id": 1,
+      "productId": 1,
+      "userId": 1,
+      "type": "ENTRADA",
+      "quantity": 18,
+      "reason": "Inventario inicial",
+      "notes": "",
+      "createdAt": "2026-04-17T04:32:58.440Z"
+    },
+    {
+      "id": 2,
+      "productId": 2,
+      "userId": 1,
+      "type": "ENTRADA",
+      "quantity": 22,
+      "reason": "Inventario inicial",
+      "notes": "",
+      "createdAt": "2026-04-17T04:32:58.440Z"
+    },
+    {
+      "id": 3,
+      "productId": 3,
+      "userId": 1,
+      "type": "ENTRADA",
+      "quantity": 26,
+      "reason": "Inventario inicial",
+      "notes": "",
+      "createdAt": "2026-04-17T04:32:58.440Z"
+    },
+    {
+      "id": 4,
+      "productId": 4,
+      "userId": 1,
+      "type": "ENTRADA",
+      "quantity": 30,
+      "reason": "Inventario inicial",
+      "notes": "",
+      "createdAt": "2026-04-17T04:32:58.440Z"
+    },
+    {
+      "id": 5,
+      "productId": 5,
+      "userId": 1,
+      "type": "ENTRADA",
+      "quantity": 34,
+      "reason": "Inventario inicial",
+      "notes": "",
+      "createdAt": "2026-04-17T04:32:58.440Z"
+    },
+    {
+      "id": 6,
+      "productId": 6,
+      "userId": 1,
+      "type": "ENTRADA",
+      "quantity": 38,
+      "reason": "Inventario inicial",
+      "notes": "",
+      "createdAt": "2026-04-17T04:32:58.440Z"
+    },
+    {
+      "id": 7,
+      "productId": 7,
+      "userId": 1,
+      "type": "ENTRADA",
+      "quantity": 42,
+      "reason": "Inventario inicial",
+      "notes": "",
+      "createdAt": "2026-04-17T04:32:58.440Z"
+    },
+    {
+      "id": 8,
+      "productId": 8,
+      "userId": 1,
+      "type": "ENTRADA",
+      "quantity": 46,
+      "reason": "Inventario inicial",
+      "notes": "",
+      "createdAt": "2026-04-17T04:32:58.440Z"
+    },
+    {
+      "id": 9,
+      "productId": 9,
+      "userId": 1,
+      "type": "ENTRADA",
+      "quantity": 18,
+      "reason": "Inventario inicial",
+      "notes": "",
+      "createdAt": "2026-04-17T04:32:58.440Z"
+    },
+    {
+      "id": 10,
+      "productId": 10,
+      "userId": 1,
+      "type": "ENTRADA",
+      "quantity": 22,
+      "reason": "Inventario inicial",
+      "notes": "",
+      "createdAt": "2026-04-17T04:32:58.440Z"
+    },
+    {
+      "id": 11,
+      "productId": 11,
+      "userId": 1,
+      "type": "ENTRADA",
+      "quantity": 26,
+      "reason": "Inventario inicial",
+      "notes": "",
+      "createdAt": "2026-04-17T04:32:58.440Z"
+    },
+    {
+      "id": 12,
+      "productId": 12,
+      "userId": 1,
+      "type": "ENTRADA",
+      "quantity": 30,
+      "reason": "Inventario inicial",
+      "notes": "",
+      "createdAt": "2026-04-17T04:32:58.440Z"
+    },
+    {
+      "id": 13,
+      "productId": 13,
+      "userId": 1,
+      "type": "ENTRADA",
+      "quantity": 34,
+      "reason": "Inventario inicial",
+      "notes": "",
+      "createdAt": "2026-04-17T04:32:58.440Z"
+    },
+    {
+      "id": 14,
+      "productId": 14,
+      "userId": 1,
+      "type": "ENTRADA",
+      "quantity": 38,
+      "reason": "Inventario inicial",
+      "notes": "",
+      "createdAt": "2026-04-17T04:32:58.440Z"
+    },
+    {
+      "id": 15,
+      "productId": 15,
+      "userId": 1,
+      "type": "ENTRADA",
+      "quantity": 42,
+      "reason": "Inventario inicial",
+      "notes": "",
+      "createdAt": "2026-04-17T04:32:58.440Z"
+    },
+    {
+      "id": 16,
+      "productId": 16,
+      "userId": 1,
+      "type": "ENTRADA",
+      "quantity": 46,
+      "reason": "Inventario inicial",
+      "notes": "",
+      "createdAt": "2026-04-17T04:32:58.440Z"
+    },
+    {
+      "id": 17,
+      "productId": 17,
+      "userId": 1,
+      "type": "ENTRADA",
+      "quantity": 18,
+      "reason": "Inventario inicial",
+      "notes": "",
+      "createdAt": "2026-04-17T04:32:58.440Z"
+    },
+    {
+      "id": 18,
+      "productId": 18,
+      "userId": 1,
+      "type": "ENTRADA",
+      "quantity": 22,
+      "reason": "Inventario inicial",
+      "notes": "",
+      "createdAt": "2026-04-17T04:32:58.440Z"
+    },
+    {
+      "id": 19,
+      "productId": 19,
+      "userId": 1,
+      "type": "ENTRADA",
+      "quantity": 26,
+      "reason": "Inventario inicial",
+      "notes": "",
+      "createdAt": "2026-04-17T04:32:58.440Z"
+    },
+    {
+      "id": 20,
+      "productId": 20,
+      "userId": 1,
+      "type": "ENTRADA",
+      "quantity": 30,
+      "reason": "Inventario inicial",
+      "notes": "",
+      "createdAt": "2026-04-17T04:32:58.440Z"
+    },
+    {
+      "id": 21,
+      "productId": 21,
+      "userId": 1,
+      "type": "ENTRADA",
+      "quantity": 34,
+      "reason": "Inventario inicial",
+      "notes": "",
+      "createdAt": "2026-04-17T04:32:58.440Z"
+    },
+    {
+      "id": 22,
+      "productId": 22,
+      "userId": 1,
+      "type": "ENTRADA",
+      "quantity": 38,
+      "reason": "Inventario inicial",
+      "notes": "",
+      "createdAt": "2026-04-17T04:32:58.440Z"
+    },
+    {
+      "id": 23,
+      "productId": 23,
+      "userId": 1,
+      "type": "ENTRADA",
+      "quantity": 42,
+      "reason": "Inventario inicial",
+      "notes": "",
+      "createdAt": "2026-04-17T04:32:58.440Z"
+    },
+    {
+      "id": 24,
+      "productId": 24,
+      "userId": 1,
+      "type": "ENTRADA",
+      "quantity": 46,
+      "reason": "Inventario inicial",
+      "notes": "",
+      "createdAt": "2026-04-17T04:32:58.440Z"
+    },
+    {
+      "id": 25,
+      "productId": 25,
+      "userId": 1,
+      "type": "ENTRADA",
+      "quantity": 18,
+      "reason": "Inventario inicial",
+      "notes": "",
+      "createdAt": "2026-04-17T04:32:58.440Z"
+    },
+    {
+      "id": 26,
+      "productId": 26,
+      "userId": 1,
+      "type": "ENTRADA",
+      "quantity": 22,
+      "reason": "Inventario inicial",
+      "notes": "",
+      "createdAt": "2026-04-17T04:32:58.440Z"
+    },
+    {
+      "id": 27,
+      "productId": 27,
+      "userId": 1,
+      "type": "ENTRADA",
+      "quantity": 26,
+      "reason": "Inventario inicial",
+      "notes": "",
+      "createdAt": "2026-04-17T04:32:58.440Z"
+    },
+    {
+      "id": 28,
+      "productId": 28,
+      "userId": 1,
+      "type": "ENTRADA",
+      "quantity": 30,
+      "reason": "Inventario inicial",
+      "notes": "",
+      "createdAt": "2026-04-17T04:32:58.440Z"
+    },
+    {
+      "id": 29,
+      "productId": 29,
+      "userId": 1,
+      "type": "ENTRADA",
+      "quantity": 34,
+      "reason": "Inventario inicial",
+      "notes": "",
+      "createdAt": "2026-04-17T04:32:58.440Z"
+    },
+    {
+      "id": 30,
+      "productId": 30,
+      "userId": 1,
+      "type": "ENTRADA",
+      "quantity": 38,
+      "reason": "Inventario inicial",
+      "notes": "",
+      "createdAt": "2026-04-17T04:32:58.440Z"
+    },
+    {
+      "id": 31,
+      "productId": 18,
+      "userId": 7,
+      "type": "SALIDA",
+      "quantity": 22,
+      "reason": "Venta aprobada",
+      "notes": "Pago 1 aprobado",
+      "createdAt": "2026-04-17T04:50:27.968Z"
+    },
+    {
+      "id": 32,
+      "productId": 2,
+      "userId": 7,
+      "type": "ENTRADA",
+      "quantity": 10,
+      "reason": "compra",
+      "notes": "",
+      "createdAt": "2026-04-17T04:51:34.842Z"
+    },
+    {
+      "id": 33,
+      "productId": 19,
+      "userId": 7,
+      "type": "ENTRADA",
+      "quantity": 9999,
+      "reason": "",
+      "notes": "",
+      "createdAt": "2026-04-17T04:51:46.794Z"
+    },
+    {
+      "id": 34,
+      "productId": 19,
+      "userId": 2,
+      "type": "SALIDA",
+      "quantity": 1560,
+      "reason": "Venta aprobada",
+      "notes": "Pago 2 aprobado",
+      "createdAt": "2026-04-17T04:54:21.858Z"
+    },
+    {
+      "id": 35,
+      "productId": 7,
+      "userId": 9,
+      "type": "SALIDA",
+      "quantity": 1,
+      "reason": "Venta aprobada",
+      "notes": "Pago 3 aprobado",
+      "createdAt": "2026-04-17T18:25:37.571Z"
+    },
+    {
+      "id": 36,
+      "productId": 13,
+      "userId": 9,
+      "type": "SALIDA",
+      "quantity": 1,
+      "reason": "Venta aprobada",
+      "notes": "Pago 3 aprobado",
+      "createdAt": "2026-04-17T18:25:37.571Z"
+    },
+    {
+      "id": 37,
+      "productId": 1,
+      "userId": 1,
+      "type": "SALIDA",
+      "quantity": 15,
+      "reason": "Venta aprobada",
+      "notes": "Pago 5 aprobado",
+      "createdAt": "2026-04-21T03:23:08.821Z"
+    },
+    {
+      "id": 38,
+      "productId": 1,
+      "userId": 1,
+      "type": "SALIDA",
+      "quantity": 3,
+      "reason": "Venta aprobada",
+      "notes": "Pago 6 aprobado",
+      "createdAt": "2026-04-21T03:58:49.669Z"
+    }
+  ],
+  "carts": [
+    {
+      "userId": 4,
+      "items": []
+    },
+    {
+      "userId": 3,
+      "items": []
+    },
+    {
+      "userId": 8,
+      "items": []
+    },
+    {
+      "userId": 11,
+      "items": [
+        {
+          "id": 9,
+          "productId": 13,
+          "quantity": 2
+        }
+      ]
+    }
+  ],
+  "orders": [
+    {
+      "id": 1,
+      "number": "PED-329970",
+      "userId": 4,
+      "status": "PAGADO",
+      "deliveryType": "RECOGER_EN_TIENDA",
+      "deliveryAddress": "",
+      "notes": "fh66",
+      "subtotal": 2068000,
+      "discountTotal": 206800,
+      "total": 1861200,
+      "promotions": [
+        {
+          "code": "BULK10",
+          "description": "10% por comprar 12 o más unidades",
+          "value": 206800
+        }
+      ],
+      "details": [
+        {
+          "id": 1,
+          "productId": 18,
+          "quantity": 22,
+          "unitPrice": 94000,
+          "subtotal": 2068000
+        }
+      ],
+      "createdAt": "2026-04-17T04:48:49.970Z"
+    },
+    {
+      "id": 2,
+      "number": "PED-614446",
+      "userId": 3,
+      "status": "PAGADO",
+      "deliveryType": "DOMICILIO",
+      "deliveryAddress": "200",
+      "notes": "200",
+      "subtotal": 160680000,
+      "discountTotal": 16068000,
+      "total": 144612000,
+      "promotions": [
+        {
+          "code": "BULK10",
+          "description": "10% por comprar 12 o más unidades",
+          "value": 16068000
+        }
+      ],
+      "details": [
+        {
+          "id": 2,
+          "productId": 19,
+          "quantity": 1560,
+          "unitPrice": 103000,
+          "subtotal": 160680000
+        }
+      ],
+      "createdAt": "2026-04-17T04:53:34.446Z"
+    },
+    {
+      "id": 3,
+      "number": "PED-575044",
+      "userId": 8,
+      "status": "PAGADO",
+      "deliveryType": "DOMICILIO",
+      "deliveryAddress": "armnia ",
+      "notes": "rico ",
+      "subtotal": 231000,
+      "discountTotal": 0,
+      "total": 231000,
+      "promotions": [],
+      "details": [
+        {
+          "id": 3,
+          "productId": 7,
+          "quantity": 1,
+          "unitPrice": 95000,
+          "subtotal": 95000
+        },
+        {
+          "id": 4,
+          "productId": 13,
+          "quantity": 1,
+          "unitPrice": 136000,
+          "subtotal": 136000
+        }
+      ],
+      "createdAt": "2026-04-17T18:12:55.044Z"
+    },
+    {
+      "id": 4,
+      "number": "PED-628889",
+      "userId": 8,
+      "status": "ENTREGADO",
+      "deliveryType": "DOMICILIO",
+      "deliveryAddress": "Armenia",
+      "notes": "kdkkd",
+      "subtotal": 2575000,
+      "discountTotal": 257500,
+      "total": 2317500,
+      "promotions": [
+        {
+          "code": "BULK10",
+          "description": "10% por comprar 12 o más unidades",
+          "value": 257500
+        }
+      ],
+      "details": [
+        {
+          "id": 5,
+          "productId": 19,
+          "quantity": 25,
+          "unitPrice": 103000,
+          "subtotal": 2575000
+        }
+      ],
+      "createdAt": "2026-04-17T18:47:08.889Z"
+    },
+    {
+      "id": 5,
+      "number": "PED-521774",
+      "userId": 11,
+      "status": "ENTREGADO",
+      "deliveryType": "RECOGER_EN_TIENDA",
+      "deliveryAddress": "",
+      "notes": "jj",
+      "subtotal": 3150000,
+      "discountTotal": 535500,
+      "total": 2614500,
+      "promotions": [
+        {
+          "code": "BULK10",
+          "description": "10% por comprar 12 o más unidades",
+          "value": 315000
+        },
+        {
+          "code": "MACALLAN7",
+          "description": "7% de descuento especial en Macallan por 2 o más unidades",
+          "value": 220500
+        }
+      ],
+      "details": [
+        {
+          "id": 6,
+          "productId": 1,
+          "quantity": 15,
+          "unitPrice": 210000,
+          "subtotal": 3150000
+        }
+      ],
+      "createdAt": "2026-04-21T03:18:41.774Z"
+    },
+    {
+      "id": 6,
+      "number": "PED-842115",
+      "userId": 11,
+      "status": "PAGADO",
+      "deliveryType": "RECOGER_EN_TIENDA",
+      "deliveryAddress": "",
+      "notes": "-ñllkl,",
+      "subtotal": 630000,
+      "discountTotal": 44100,
+      "total": 585900,
+      "promotions": [
+        {
+          "code": "MACALLAN7",
+          "description": "7% de descuento especial en Macallan por 2 o más unidades",
+          "value": 44100
+        }
+      ],
+      "details": [
+        {
+          "id": 7,
+          "productId": 1,
+          "quantity": 3,
+          "unitPrice": 210000,
+          "subtotal": 630000
+        }
+      ],
+      "createdAt": "2026-04-21T03:57:22.115Z"
+    }
+  ],
+  "payments": [
+    {
+      "id": 1,
+      "orderId": 1,
+      "method": "TRANSFERENCIA",
+      "status": "APROBADO",
+      "reference": "2000",
+      "amount": 1861200,
+      "createdAt": "2026-04-17T04:48:55.291Z",
+      "approvedAt": "2026-04-17T04:50:27.968Z",
+      "approvedBy": 7
+    },
+    {
+      "id": 2,
+      "orderId": 2,
+      "method": "TRANSFERENCIA",
+      "status": "APROBADO",
+      "reference": "",
+      "amount": 144612000,
+      "createdAt": "2026-04-17T04:53:39.026Z",
+      "approvedAt": "2026-04-17T04:54:21.858Z",
+      "approvedBy": 2
+    },
+    {
+      "id": 3,
+      "orderId": 3,
+      "method": "TRANSFERENCIA",
+      "status": "APROBADO",
+      "reference": "0524",
+      "amount": 231000,
+      "createdAt": "2026-04-17T18:13:04.100Z",
+      "approvedAt": "2026-04-17T18:25:37.571Z",
+      "approvedBy": 9
+    },
+    {
+      "id": 4,
+      "orderId": 4,
+      "method": "TARJETA",
+      "status": "PENDIENTE",
+      "reference": "25258",
+      "amount": 2317500,
+      "createdAt": "2026-04-17T18:47:21.821Z",
+      "approvedAt": null,
+      "approvedBy": null
+    },
+    {
+      "id": 5,
+      "orderId": 5,
+      "method": "TRANSFERENCIA",
+      "status": "APROBADO",
+      "reference": "77",
+      "amount": 2614500,
+      "createdAt": "2026-04-21T03:19:26.935Z",
+      "approvedAt": "2026-04-21T03:23:08.821Z",
+      "approvedBy": 1
+    },
+    {
+      "id": 6,
+      "orderId": 6,
+      "method": "TRANSFERENCIA",
+      "status": "APROBADO",
+      "reference": "2222",
+      "amount": 585900,
+      "createdAt": "2026-04-21T03:57:28.063Z",
+      "approvedAt": "2026-04-21T03:58:49.669Z",
+      "approvedBy": 1
+    }
+  ],
+  "invoices": [
+    {
+      "id": 1,
+      "number": "FAC-448626",
+      "orderId": 1,
+      "status": "GENERADA",
+      "subtotal": 2068000,
+      "discountTotal": 206800,
+      "total": 1861200,
+      "notes": "Factura generada para PED-329970",
+      "issuedAt": "2026-04-17T04:50:48.626Z"
+    },
+    {
+      "id": 2,
+      "number": "FAC-363803",
+      "orderId": 3,
+      "status": "GENERADA",
+      "subtotal": 231000,
+      "discountTotal": 0,
+      "total": 231000,
+      "notes": "Factura generada para PED-575044",
+      "issuedAt": "2026-04-17T18:26:03.803Z"
+    },
+    {
+      "id": 3,
+      "number": "FAC-361998",
+      "orderId": 2,
+      "status": "GENERADA",
+      "subtotal": 160680000,
+      "discountTotal": 16068000,
+      "total": 144612000,
+      "notes": "Factura generada para PED-614446",
+      "issuedAt": "2026-04-17T19:32:41.998Z"
+    },
+    {
+      "id": 4,
+      "number": "FAC-937751",
+      "orderId": 6,
+      "status": "GENERADA",
+      "subtotal": 630000,
+      "discountTotal": 44100,
+      "total": 585900,
+      "notes": "Factura generada para PED-842115",
+      "issuedAt": "2026-04-21T03:58:57.751Z"
+    }
+  ],
+  "notifications": [
+    {
+      "id": 23,
+      "type": "FACTURA_GENERADA",
+      "title": "Factura generada",
+      "message": "El ADMIN Admin Sistema generó la factura FAC-937751 del pedido PED-842115 del cliente dd ada.",
+      "actorName": "Admin Sistema",
+      "actorEmail": "admin@licoreria.com",
+      "actorRole": "ADMIN",
+      "referenceType": "FACTURA",
+      "referenceId": 4,
+      "read": false,
+      "createdAt": "2026-04-21T03:58:57.751Z"
+    },
+    {
+      "id": 22,
+      "type": "PAGO_APROBADO",
+      "title": "Pago aprobado",
+      "message": "El ADMIN Admin Sistema aprobó el pago del pedido PED-842115 del cliente dd ada.",
+      "actorName": "Admin Sistema",
+      "actorEmail": "admin@licoreria.com",
+      "actorRole": "ADMIN",
+      "referenceType": "PAGO",
+      "referenceId": 6,
+      "read": false,
+      "createdAt": "2026-04-21T03:58:49.669Z"
+    },
+    {
+      "id": 21,
+      "type": "PAGO_REGISTRADO",
+      "title": "Pago registrado por cliente",
+      "message": "El cliente dd ada registró un pago para el pedido PED-842115 por valor de 585900.",
+      "actorName": "dd ada",
+      "actorEmail": "ad@licoreria.com",
+      "actorRole": "CLIENTE",
+      "referenceType": "PAGO",
+      "referenceId": 6,
+      "read": false,
+      "createdAt": "2026-04-21T03:57:28.063Z"
+    },
+    {
+      "id": 20,
+      "type": "PEDIDO_CREADO",
+      "title": "Nuevo pedido creado",
+      "message": "El cliente dd ada creó el pedido PED-842115 por valor de 585900.",
+      "actorName": "dd ada",
+      "actorEmail": "ad@licoreria.com",
+      "actorRole": "CLIENTE",
+      "referenceType": "PEDIDO",
+      "referenceId": 6,
+      "read": false,
+      "createdAt": "2026-04-21T03:57:22.115Z"
+    },
+    {
+      "id": 19,
+      "type": "PAGO_APROBADO",
+      "title": "Pago aprobado",
+      "message": "El ADMIN Admin Sistema aprobó el pago del pedido PED-521774 del cliente dd ada.",
+      "actorName": "Admin Sistema",
+      "actorEmail": "admin@licoreria.com",
+      "actorRole": "ADMIN",
+      "referenceType": "PAGO",
+      "referenceId": 5,
+      "read": false,
+      "createdAt": "2026-04-21T03:23:08.821Z"
+    },
+    {
+      "id": 18,
+      "type": "PAGO_REGISTRADO",
+      "title": "Pago registrado por cliente",
+      "message": "El cliente dd ada registró un pago para el pedido PED-521774 por valor de 2614500.",
+      "actorName": "dd ada",
+      "actorEmail": "ad@licoreria.com",
+      "actorRole": "CLIENTE",
+      "referenceType": "PAGO",
+      "referenceId": 5,
+      "read": false,
+      "createdAt": "2026-04-21T03:19:26.935Z"
+    },
+    {
+      "id": 17,
+      "type": "PEDIDO_CREADO",
+      "title": "Nuevo pedido creado",
+      "message": "El cliente dd ada creó el pedido PED-521774 por valor de 2614500.",
+      "actorName": "dd ada",
+      "actorEmail": "ad@licoreria.com",
+      "actorRole": "CLIENTE",
+      "referenceType": "PEDIDO",
+      "referenceId": 5,
+      "read": false,
+      "createdAt": "2026-04-21T03:18:41.774Z"
+    },
+    {
+      "id": 16,
+      "type": "FACTURA_GENERADA",
+      "title": "Factura generada",
+      "message": "El ADMIN Admin Sistema generó la factura FAC-361998 del pedido PED-614446 del cliente Cliente Demo.",
+      "actorName": "Admin Sistema",
+      "actorEmail": "admin@licoreria.com",
+      "actorRole": "ADMIN",
+      "referenceType": "FACTURA",
+      "referenceId": 3,
+      "read": false,
+      "createdAt": "2026-04-17T19:32:41.999Z"
+    },
+    {
+      "id": 15,
+      "type": "PAGO_REGISTRADO",
+      "title": "Pago registrado por cliente",
+      "message": "El cliente sebastian cano registró un pago para el pedido PED-628889 por valor de 2317500.",
+      "actorName": "sebastian cano",
+      "actorEmail": "cano123@gmail.com",
+      "actorRole": "CLIENTE",
+      "referenceType": "PAGO",
+      "referenceId": 4,
+      "read": false,
+      "createdAt": "2026-04-17T18:47:21.821Z"
+    },
+    {
+      "id": 14,
+      "type": "PEDIDO_CREADO",
+      "title": "Nuevo pedido creado",
+      "message": "El cliente sebastian cano creó el pedido PED-628889 por valor de 2317500.",
+      "actorName": "sebastian cano",
+      "actorEmail": "cano123@gmail.com",
+      "actorRole": "CLIENTE",
+      "referenceType": "PEDIDO",
+      "referenceId": 4,
+      "read": false,
+      "createdAt": "2026-04-17T18:47:08.889Z"
+    },
+    {
+      "id": 13,
+      "type": "FACTURA_GENERADA",
+      "title": "Factura generada",
+      "message": "El TRABAJADOR Jorge Cano generó la factura FAC-363803 del pedido PED-575044 del cliente sebastian cano.",
+      "actorName": "Jorge Cano",
+      "actorEmail": "jorge@licoreria.com",
+      "actorRole": "TRABAJADOR",
+      "referenceType": "FACTURA",
+      "referenceId": 2,
+      "read": false,
+      "createdAt": "2026-04-17T18:26:03.803Z"
+    },
+    {
+      "id": 12,
+      "type": "PAGO_APROBADO",
+      "title": "Pago aprobado",
+      "message": "El TRABAJADOR Jorge Cano aprobó el pago del pedido PED-575044 del cliente sebastian cano.",
+      "actorName": "Jorge Cano",
+      "actorEmail": "jorge@licoreria.com",
+      "actorRole": "TRABAJADOR",
+      "referenceType": "PAGO",
+      "referenceId": 3,
+      "read": false,
+      "createdAt": "2026-04-17T18:25:37.571Z"
+    },
+    {
+      "id": 11,
+      "type": "TRABAJADOR_CREADO",
+      "title": "Trabajador creado",
+      "message": "Se creó el trabajador Jorge Cano.",
+      "actorName": "Admin Sistema",
+      "actorEmail": "admin@licoreria.com",
+      "actorRole": "ADMIN",
+      "referenceType": "TRABAJADOR",
+      "referenceId": 9,
+      "read": false,
+      "createdAt": "2026-04-17T18:23:18.028Z"
+    },
+    {
+      "id": 10,
+      "type": "PAGO_REGISTRADO",
+      "title": "Pago registrado por cliente",
+      "message": "El cliente sebastian cano registró un pago para el pedido PED-575044 por valor de 231000.",
+      "actorName": "sebastian cano",
+      "actorEmail": "cano123@gmail.com",
+      "actorRole": "CLIENTE",
+      "referenceType": "PAGO",
+      "referenceId": 3,
+      "read": false,
+      "createdAt": "2026-04-17T18:13:04.101Z"
+    },
+    {
+      "id": 9,
+      "type": "PEDIDO_CREADO",
+      "title": "Nuevo pedido creado",
+      "message": "El cliente sebastian cano creó el pedido PED-575044 por valor de 231000.",
+      "actorName": "sebastian cano",
+      "actorEmail": "cano123@gmail.com",
+      "actorRole": "CLIENTE",
+      "referenceType": "PEDIDO",
+      "referenceId": 3,
+      "read": false,
+      "createdAt": "2026-04-17T18:12:55.044Z"
+    },
+    {
+      "id": 8,
+      "type": "PAGO_APROBADO",
+      "title": "Pago aprobado",
+      "message": "El TRABAJADOR Trabajador Licoreria aprobó el pago del pedido PED-614446 del cliente Cliente Demo.",
+      "actorName": "Trabajador Licoreria",
+      "actorEmail": "trabajador@licoreria.com",
+      "actorRole": "TRABAJADOR",
+      "referenceType": "PAGO",
+      "referenceId": 2,
+      "read": false,
+      "createdAt": "2026-04-17T04:54:21.858Z"
+    },
+    {
+      "id": 7,
+      "type": "PAGO_REGISTRADO",
+      "title": "Pago registrado por cliente",
+      "message": "El cliente Cliente Demo registró un pago para el pedido PED-614446 por valor de 144612000.",
+      "actorName": "Cliente Demo",
+      "actorEmail": "cliente@licoreria.com",
+      "actorRole": "CLIENTE",
+      "referenceType": "PAGO",
+      "referenceId": 2,
+      "read": false,
+      "createdAt": "2026-04-17T04:53:39.026Z"
+    },
+    {
+      "id": 6,
+      "type": "PEDIDO_CREADO",
+      "title": "Nuevo pedido creado",
+      "message": "El cliente Cliente Demo creó el pedido PED-614446 por valor de 144612000.",
+      "actorName": "Cliente Demo",
+      "actorEmail": "cliente@licoreria.com",
+      "actorRole": "CLIENTE",
+      "referenceType": "PEDIDO",
+      "referenceId": 2,
+      "read": false,
+      "createdAt": "2026-04-17T04:53:34.446Z"
+    },
+    {
+      "id": 5,
+      "type": "FACTURA_GENERADA",
+      "title": "Factura generada",
+      "message": "El TRABAJADOR andres camilo generó la factura FAC-448626 del pedido PED-329970 del cliente Keiner Devia.",
+      "actorName": "andres camilo",
+      "actorEmail": "anfdres@licoreria.com",
+      "actorRole": "TRABAJADOR",
+      "referenceType": "FACTURA",
+      "referenceId": 1,
+      "read": false,
+      "createdAt": "2026-04-17T04:50:48.626Z"
+    },
+    {
+      "id": 4,
+      "type": "PAGO_APROBADO",
+      "title": "Pago aprobado",
+      "message": "El TRABAJADOR andres camilo aprobó el pago del pedido PED-329970 del cliente Keiner Devia.",
+      "actorName": "andres camilo",
+      "actorEmail": "anfdres@licoreria.com",
+      "actorRole": "TRABAJADOR",
+      "referenceType": "PAGO",
+      "referenceId": 1,
+      "read": false,
+      "createdAt": "2026-04-17T04:50:27.968Z"
+    },
+    {
+      "id": 3,
+      "type": "TRABAJADOR_CREADO",
+      "title": "Trabajador creado",
+      "message": "Se creó el trabajador andres camilo.",
+      "actorName": "Admin Sistema",
+      "actorEmail": "admin@licoreria.com",
+      "actorRole": "ADMIN",
+      "referenceType": "TRABAJADOR",
+      "referenceId": 7,
+      "read": false,
+      "createdAt": "2026-04-17T04:50:02.260Z"
+    },
+    {
+      "id": 2,
+      "type": "PAGO_REGISTRADO",
+      "title": "Pago registrado por cliente",
+      "message": "El cliente Keiner Devia registró un pago para el pedido PED-329970 por valor de 1861200.",
+      "actorName": "Keiner Devia",
+      "actorEmail": "keiner@gmail.com",
+      "actorRole": "CLIENTE",
+      "referenceType": "PAGO",
+      "referenceId": 1,
+      "read": false,
+      "createdAt": "2026-04-17T04:48:55.291Z"
+    },
+    {
+      "id": 1,
+      "type": "PEDIDO_CREADO",
+      "title": "Nuevo pedido creado",
+      "message": "El cliente Keiner Devia creó el pedido PED-329970 por valor de 1861200.",
+      "actorName": "Keiner Devia",
+      "actorEmail": "keiner@gmail.com",
+      "actorRole": "CLIENTE",
+      "referenceType": "PEDIDO",
+      "referenceId": 1,
+      "read": false,
+      "createdAt": "2026-04-17T04:48:49.970Z"
+    }
+  ],
+  "procurementOrders": [
+    {
+      "id": 1,
+      "supplierId": 1,
+      "supplierName": "Distribuciones Premium",
+      "shippingCost": 18000,
+      "packagingCost": 6000,
+      "itemsCost": 0,
+      "totalCost": 24000,
+      "notes": "Costo base logístico del proveedor",
+      "createdAt": "2026-04-17T04:32:58.440Z"
+    },
+    {
+      "id": 2,
+      "supplierId": 2,
+      "supplierName": "Importadora Gold",
+      "shippingCost": 22000,
+      "packagingCost": 7000,
+      "itemsCost": 0,
+      "totalCost": 29000,
+      "notes": "Costo base logístico del proveedor",
+      "createdAt": "2026-04-17T04:32:58.440Z"
+    },
+    {
+      "id": 3,
+      "supplierId": 3,
+      "supplierName": "Vinos del Mundo",
+      "shippingCost": 25000,
+      "packagingCost": 8000,
+      "itemsCost": 0,
+      "totalCost": 33000,
+      "notes": "Costo base logístico del proveedor",
+      "createdAt": "2026-04-17T04:32:58.440Z"
+    },
+    {
+      "id": 4,
+      "supplierId": 4,
+      "supplierName": "Licores Nacionales",
+      "shippingCost": 17000,
+      "packagingCost": 5000,
+      "itemsCost": 0,
+      "totalCost": 22000,
+      "notes": "Costo base logístico del proveedor",
+      "createdAt": "2026-04-17T04:32:58.440Z"
+    }
+  ]
+}

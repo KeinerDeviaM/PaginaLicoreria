@@ -1,0 +1,106 @@
+import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
+import { api } from '../api';
+
+const money = (value) => `$${Number(value || 0).toLocaleString('es-CO')}`;
+
+export default function CartPage() {
+  const [cart, setCart] = useState(null);
+  const [msg, setMsg] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  async function load() {
+    try {
+      setLoading(true);
+      const { data } = await api.get('/cart');
+      setCart(data.data || data);
+    } catch (err) {
+      setMsg({ type: 'error', text: err.response?.data?.message || 'No se pudo cargar el carrito.' });
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  useEffect(() => { load(); }, []);
+
+  async function updateQty(itemId, quantity) {
+    try {
+      const { data } = await api.put(`/cart/items/${itemId}`, { quantity: Number(quantity) });
+      setCart(data.data || data);
+    } catch (err) {
+      setMsg({ type: 'error', text: err.response?.data?.message || 'No se pudo actualizar la cantidad.' });
+    }
+  }
+
+  async function removeItem(itemId) {
+    if (!confirm('¿Eliminar este producto del carrito?')) return;
+    const { data } = await api.delete(`/cart/items/${itemId}`);
+    setCart(data.data || data);
+  }
+
+  async function clearCart() {
+    if (!confirm('¿Vaciar carrito?')) return;
+    const { data } = await api.delete('/cart/items');
+    setCart(data.data || data);
+  }
+
+  if (loading) return <div className="container page"><div className="notice">Cargando carrito...</div></div>;
+  if (!cart?.items?.length) {
+    return (
+      <div className="container page">
+        <div className="card">
+          <h3>Tu carrito está vacío</h3>
+          <Link to="/shop/products" className="btn btn-primary">Ir al catálogo</Link>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="container page">
+      <div className="stack" style={{ justifyContent: 'space-between', alignItems: 'center' }}>
+        <h1>Carrito</h1>
+        <button className="btn btn-outline" onClick={clearCart}>Vaciar</button>
+      </div>
+      {msg && <div className={`notice ${msg.type}`}>{msg.text}</div>}
+      <div className="split">
+        <section className="card">
+          <div className="table-wrap">
+            <table>
+              <thead>
+                <tr><th>Producto</th><th>Cantidad</th><th>Precio</th><th>Subtotal</th><th></th></tr>
+              </thead>
+              <tbody>
+                {cart.items.map((item) => (
+                  <tr key={item.itemId}>
+                    <td>{item.code} · {item.name}</td>
+                    <td><input type="number" min="1" max={item.stockAvailable} value={item.quantity} onChange={(e) => updateQty(item.itemId, e.target.value)} style={{ maxWidth: 90 }} /></td>
+                    <td>{money(item.priceUnit)}</td>
+                    <td>{money(item.subtotal)}</td>
+                    <td><button className="btn btn-wine" onClick={() => removeItem(item.itemId)}>Quitar</button></td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </section>
+        <section className="card">
+          <h3>Resumen</h3>
+          <p><strong>Subtotal:</strong> {money(cart.subtotal)}</p>
+          <p><strong>Descuento:</strong> -{money(cart.discountTotal)}</p>
+          <p><strong>Total:</strong> {money(cart.total)}</p>
+          {cart.promotions?.length > 0 && (
+            <>
+              <h4>Promociones aplicadas</h4>
+              {cart.promotions.map((p) => <div key={p.code} className="small">• {p.description} ({money(p.value)})</div>)}
+            </>
+          )}
+          <div className="stack" style={{ marginTop: 16 }}>
+            <Link to="/checkout" className="btn btn-primary">Continuar compra</Link>
+            <Link to="/shop/products" className="btn btn-outline">Seguir comprando</Link>
+          </div>
+        </section>
+      </div>
+    </div>
+  );
+}

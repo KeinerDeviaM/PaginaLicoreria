@@ -1,0 +1,144 @@
+﻿import React, { useEffect, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { api } from '../api';
+
+const money = (value) => `$${Number(value || 0).toLocaleString('es-CO')}`;
+
+export default function CheckoutPage() {
+  const navigate = useNavigate();
+  const [cart, setCart] = useState(null);
+  const [deliveryType, setDeliveryType] = useState('DOMICILIO');
+  const [deliveryAddress, setDeliveryAddress] = useState('');
+  const [notes, setNotes] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [message, setMessage] = useState(null);
+
+  useEffect(() => {
+    api.get('/cart')
+      .then(({ data }) => setCart(data.data || data))
+      .catch((err) => setMessage({ type: 'error', text: err.response?.data?.message || 'No se pudo cargar el carrito.' }))
+      .finally(() => setLoading(false));
+  }, []);
+
+  async function handleSubmit(e) {
+    e.preventDefault();
+    setMessage(null);
+
+    if (deliveryType === 'DOMICILIO' && !deliveryAddress.trim()) {
+      setMessage({ type: 'error', text: 'La dirección es obligatoria para entrega a domicilio.' });
+      return;
+    }
+
+    try {
+      setSaving(true);
+      const { data } = await api.post('/orders', {
+        deliveryType,
+        deliveryAddress: deliveryType === 'DOMICILIO' ? deliveryAddress.trim() : '',
+        notes: notes.trim()
+      });
+      setMessage({ type: 'success', text: data.message || 'Pedido creado correctamente.' });
+      setTimeout(() => navigate(`/pay/${data.data.orderId}`), 800);
+    } catch (err) {
+      setMessage({ type: 'error', text: err.response?.data?.message || 'No se pudo crear el pedido.' });
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  if (loading) return <div className="container page"><div className="notice">Cargando checkout...</div></div>;
+  if (!cart?.items?.length) return <div className="container page"><div className="card"><h2>Tu carrito está vacío</h2><Link to="/shop/products" className="btn btn-primary">Ir al catálogo</Link></div></div>;
+
+  return (
+    <div className="container page">
+      <div className="stack" style={{ justifyContent: 'space-between', alignItems: 'end', gap: 16, flexWrap: 'wrap' }}>
+        <div>
+          <h1>Finalizar compra</h1>
+          <p className="small">Confirma tu pedido y completa los datos de entrega.</p>
+        </div>
+      </div>
+
+      {message && <div className={`notice ${message.type}`}>{message.text}</div>}
+
+      <div className="grid-2" style={{ marginTop: 16 }}>
+        <section className="card">
+          <h3>Resumen del carrito</h3>
+          <div className="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Producto</th>
+                  <th>Cantidad</th>
+                  <th>Precio</th>
+                  <th>Subtotal</th>
+                </tr>
+              </thead>
+              <tbody>
+                {cart.items.map((item) => (
+                  <tr key={item.itemId}>
+                    <td>{item.code} · {item.name}</td>
+                    <td>{item.quantity}</td>
+                    <td>{money(item.priceUnit)}</td>
+                    <td>{money(item.subtotal)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          <div style={{ marginTop: 16 }}>
+            <p><strong>Subtotal:</strong> {money(cart.subtotal)}</p>
+            <p><strong>Descuento:</strong> -{money(cart.discountTotal)}</p>
+            <strong>Total: {money(cart.total)}</strong>
+          </div>
+
+          {cart.promotions?.length > 0 && (
+            <div style={{ marginTop: 12 }}>
+              {cart.promotions.map((p) => (
+                <div key={p.code} className="small">• {p.description} ({money(p.value)})</div>
+              ))}
+            </div>
+          )}
+        </section>
+
+        <section className="card">
+          <h3>Datos del pedido</h3>
+          <form onSubmit={handleSubmit}>
+            <div className="form-group">
+              <label>Tipo de entrega</label>
+              <select value={deliveryType} onChange={(e) => setDeliveryType(e.target.value)}>
+                <option value="DOMICILIO">Domicilio</option>
+                <option value="RECOGER_EN_TIENDA">Recoger en tienda</option>
+              </select>
+            </div>
+
+            <div className="form-group">
+              <label>Dirección</label>
+              <input
+                value={deliveryAddress}
+                onChange={(e) => setDeliveryAddress(e.target.value)}
+                placeholder="Dirección de entrega"
+                disabled={deliveryType !== 'DOMICILIO'}
+              />
+            </div>
+
+            <div className="form-group">
+              <label>Observación</label>
+              <textarea
+                value={notes}
+                onChange={(e) => setNotes(e.target.value)}
+                rows={4}
+                placeholder="Indicaciones adicionales"
+              />
+            </div>
+
+            <div className="stack" style={{ gap: 10 }}>
+              <button className="btn btn-primary" disabled={saving}>{saving ? 'Procesando...' : 'Confirmar pedido'}</button>
+              <Link to="/cart" className="btn btn-outline">Volver al carrito</Link>
+            </div>
+          </form>
+        </section>
+      </div>
+    </div>
+  );
+}
