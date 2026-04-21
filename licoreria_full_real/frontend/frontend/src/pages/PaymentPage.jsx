@@ -49,7 +49,7 @@ export default function PaymentPage() {
     }
 
     if (method !== 'EFECTIVO' && !reference.trim()) {
-      setMessage({ type: 'error', text: 'La referencia es obligatoria para este método.' });
+      setMessage({ type: 'errorr', text: 'La referencia es obligatoria para este método.' });
       return;
     }
 
