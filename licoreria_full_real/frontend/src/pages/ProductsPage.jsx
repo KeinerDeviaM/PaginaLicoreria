@@ -47,6 +47,9 @@ export default function ProductsPage() {
   const [supplierSearch, setSupplierSearch] = useState('');
   const [showSupplierResults, setShowSupplierResults] = useState(false);
 
+  const [uploadingImage, setUploadingImage] = useState(false);
+  const [selectedImageName, setSelectedImageName] = useState('');
+
   const [confirmState, setConfirmState] = useState({
     open: false,
     productId: null,
@@ -115,6 +118,8 @@ export default function ProductsPage() {
     setShowBrandResults(false);
     setShowCategoryResults(false);
     setShowSupplierResults(false);
+    setUploadingImage(false);
+    setSelectedImageName('');
   }
 
   function handleChange(e) {
@@ -163,6 +168,60 @@ export default function ProductsPage() {
     setShowSupplierResults(false);
   }
 
+  async function uploadImageToCloudinary(file) {
+    if (!file) return;
+
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/jpg'];
+    if (!allowedTypes.includes(file.type)) {
+      const text = 'Solo se permiten imágenes JPG, PNG o WEBP.';
+      setMsg({ type: 'error', text });
+      showToast({ type: 'warning', title: 'Formato no permitido', text });
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      const text = 'La imagen no debe superar los 5 MB.';
+      setMsg({ type: 'error', text });
+      showToast({ type: 'warning', title: 'Archivo muy pesado', text });
+      return;
+    }
+
+    try {
+      setUploadingImage(true);
+      setSelectedImageName(file.name);
+
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('upload_preset', 'productos_unsigned');
+
+      const response = await fetch('https://api.cloudinary.com/v1_1/dp0a8xkpx/image/upload', {
+        method: 'POST',
+        body: formData
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error?.message || 'No se pudo subir la imagen');
+      }
+
+      setForm((prev) => ({
+        ...prev,
+        imageUrl: data.secure_url
+      }));
+
+      const text = 'Imagen subida correctamente.';
+      setMsg({ type: 'success', text });
+      showToast({ type: 'success', title: 'Subida completada', text });
+    } catch (error) {
+      const text = error.message || 'Error al subir la imagen.';
+      setMsg({ type: 'error', text });
+      showToast({ type: 'error', title: 'Error al subir', text });
+    } finally {
+      setUploadingImage(false);
+    }
+  }
+
   function edit(row) {
     setEditingId(row.id);
     setForm({
@@ -186,6 +245,7 @@ export default function ProductsPage() {
     setShowBrandResults(false);
     setShowCategoryResults(false);
     setShowSupplierResults(false);
+    setSelectedImageName('');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
@@ -308,7 +368,7 @@ export default function ProductsPage() {
       <div className="stack" style={{ justifyContent: 'space-between', alignItems: 'end', gap: 16, flexWrap: 'wrap' }}>
         <div>
           <h1>Productos</h1>
-          <p className="small">Gestiona el catálogo, precios, stock e información visual de cada producto.</p>
+          <p className="small">Gestiona el catálogo, precios, stock e imágenes de cada producto.</p>
         </div>
       </div>
 
@@ -374,7 +434,30 @@ export default function ProductsPage() {
               <div className="form-group"><label>Código</label><input name="code" value={form.code} onChange={handleChange} /></div>
               <div className="form-group"><label>Nombre</label><input name="name" value={form.name} onChange={handleChange} /></div>
               <div className="form-group"><label>Descripción</label><textarea name="description" value={form.description} onChange={handleChange} /></div>
-              <div className="form-group"><label>URL de imagen</label><input name="imageUrl" value={form.imageUrl} onChange={handleChange} /></div>
+
+              <div className="form-group">
+                <label>URL de imagen</label>
+                <input
+                  name="imageUrl"
+                  value={form.imageUrl}
+                  onChange={handleChange}
+                  placeholder="Se llena automáticamente al subir o puedes pegar una URL"
+                />
+              </div>
+
+              <div className="form-group">
+                <label>Subir imagen a Cloudinary</label>
+                <input
+                  type="file"
+                  accept="image/png,image/jpeg,image/jpg,image/webp"
+                  onChange={(e) => uploadImageToCloudinary(e.target.files?.[0])}
+                />
+                {uploadingImage && (
+                  <div className="small" style={{ marginTop: 8 }}>
+                    Subiendo imagen: <strong>{selectedImageName}</strong>...
+                  </div>
+                )}
+              </div>
 
               {form.imageUrl && (
                 <div className="card" style={{ marginBottom: 14 }}>
@@ -393,7 +476,9 @@ export default function ProductsPage() {
               </div>
 
               <div className="stack">
-                <button className="btn btn-primary">{editingId ? 'Actualizar producto' : 'Crear producto'}</button>
+                <button className="btn btn-primary" disabled={uploadingImage}>
+                  {uploadingImage ? 'Subiendo imagen...' : editingId ? 'Actualizar producto' : 'Crear producto'}
+                </button>
                 {editingId && <button type="button" className="btn btn-outline" onClick={resetForm}>Cancelar edición</button>}
               </div>
             </form>

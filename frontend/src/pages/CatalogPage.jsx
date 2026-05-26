@@ -1,4 +1,4 @@
-﻿import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { api } from '../api';
 import { getAuth } from '../auth';
@@ -82,73 +82,60 @@ export default function CatalogPage() {
 
   return (
     <div className="container page">
-      <div
-        className="stack"
-        style={{
-          justifyContent: 'space-between',
-          alignItems: 'end',
-          gap: 16,
-          flexWrap: 'wrap'
-        }}
-      >
-        <div>
-          <h1>Catálogo</h1>
-          <p className="small">Busca productos por nombre, código, marca o categoría.</p>
-        </div>
-
-        <div style={{ display: 'flex', gap: 10, alignItems: 'center', flexWrap: 'wrap' }}>
-          <div style={{ position: 'relative' }}>
-            <span
-              style={{
-                position: 'absolute',
-                left: 12,
-                top: '50%',
-                transform: 'translateY(-50%)',
-                color: '#9ca3af',
-                pointerEvents: 'none',
-                display: 'flex',
-                alignItems: 'center'
-              }}
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="16"
-                height="16"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <circle cx="11" cy="11" r="8"></circle>
-                <path d="m21 21-4.3-4.3"></path>
-              </svg>
-            </span>
-
-            <input
-              value={q}
-              onChange={(e) => setQ(e.target.value)}
-              placeholder="Buscar producto..."
-              style={{ minWidth: 280, paddingLeft: 36 }}
-            />
+      <section className="catalog-hero glass-card reveal-up">
+        <div className="catalog-toolbar">
+          <div>
+            <div className="eyebrow">Catálogo activo</div>
+            <h1>Explora el inventario con mejor lectura visual.</h1>
+            <p className="small">
+              Busca por nombre, código, marca o categoría. El filtro se siente más claro y el
+              catálogo responde mejor visualmente.
+            </p>
           </div>
 
-          <button className="btn btn-primary" onClick={() => load(q)}>
-            Buscar
-          </button>
+          <div className="search-shell">
+            <div className="search-input-wrap">
+              <span className="search-input-icon">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <circle cx="11" cy="11" r="8" />
+                  <path d="m21 21-4.3-4.3" />
+                </svg>
+              </span>
 
-          <button
-            className="btn btn-outline"
-            onClick={() => {
-              setQ('');
-              load('');
-            }}
-          >
-            Limpiar
-          </button>
+              <input
+                className="search-input"
+                value={q}
+                onChange={(e) => setQ(e.target.value)}
+                placeholder="Buscar producto..."
+              />
+            </div>
+
+            <button className="btn btn-primary" onClick={() => load(q)}>
+              Buscar
+            </button>
+
+            <button
+              className="btn btn-outline"
+              onClick={() => {
+                setQ('');
+                load('');
+              }}
+            >
+              Limpiar
+            </button>
+          </div>
         </div>
-      </div>
+      </section>
 
       {msg && <div className={`notice ${msg.type}`}>{msg.text}</div>}
       {loading && <div className="notice">Cargando productos...</div>}
@@ -156,38 +143,55 @@ export default function CatalogPage() {
 
       {!loading && !error && (
         <>
-          <p className="small" style={{ marginTop: 16 }}>
-            {q.trim()
-              ? `Resultados encontrados: ${filteredProducts.length}`
-              : `Productos disponibles: ${filteredProducts.length}`}
-          </p>
+          <div className="catalog-result-bar">
+            <div className="stack">
+              <span className="result-pill">
+                {q.trim()
+                  ? `Resultados encontrados: ${filteredProducts.length}`
+                  : `Productos disponibles: ${filteredProducts.length}`}
+              </span>
+              <span className="result-pill">Vista optimizada para explorar más rápido</span>
+            </div>
+
+            {user?.role === 'CLIENTE' && (
+              <Link className="btn btn-outline" to="/cart">
+                Ver carrito
+              </Link>
+            )}
+          </div>
 
           <div className="product-grid">
-            {filteredProducts.map((product) => (
-              <article key={product.id} className="product-card">
+            {filteredProducts.map((product, index) => (
+              <article
+                key={product.id}
+                className={`product-card reveal-up reveal-delay-${(index % 4) + 1}`}
+              >
                 <div className="product-image">
                   {product.imageUrl ? (
-                    <img
-                      src={product.imageUrl}
-                      alt={product.name}
-                      style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                    />
+                    <img src={product.imageUrl} alt={product.name} />
                   ) : (
                     product.name?.charAt(0)
                   )}
                 </div>
 
                 <div className="product-body">
-                  <div className="small">{product.brandName} · {product.categoryName}</div>
+                  <div className="small">
+                    {product.brandName} · {product.categoryName}
+                  </div>
                   <h3>{product.name}</h3>
-                  <p className="small">{product.volumeMl} ml · {product.alcohol}° · Stock {product.stock}</p>
+                  <p className="small product-copy">
+                    {product.volumeMl} ml · {product.alcohol}° · Stock {product.stock}
+                  </p>
 
-                  <div className="stack" style={{ justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 10 }}>
-                    <strong>{money(product.salePrice)}</strong>
+                  <div
+                    className="stack"
+                    style={{ justifyContent: 'space-between', alignItems: 'center', gap: 10 }}
+                  >
+                    <strong className="price-tag">{money(product.salePrice)}</strong>
 
-                    <div className="stack" style={{ gap: 8, flexWrap: 'wrap' }}>
+                    <div className="stack" style={{ gap: 8 }}>
                       <button className="btn btn-primary" onClick={() => addToCart(product.id)}>
-                        Agregar al carrito
+                        Agregar
                       </button>
 
                       <Link className="btn btn-outline" to={`/shop/products/${product.id}`}>

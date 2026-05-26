@@ -1,4 +1,4 @@
-﻿import React from 'react';
+﻿import React, { useEffect } from 'react';
 import { Navigate, Route, Routes } from 'react-router-dom';
 import { PublicLayout, InternalLayout } from './components/AppLayout';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -16,6 +16,7 @@ import PaymentPage from './pages/PaymentPage';
 import MyOrdersPage from './pages/MyOrdersPage';
 import MyInvoicesPage from './pages/MyInvoicesPage';
 import InternalDashboardPage from './pages/InternalDashboardPage';
+import AdminDashboardPage from './pages/AdminDashboardPage';
 import ProductsPage from './pages/ProductsPage';
 import MovementsPage from './pages/MovementsPage';
 import AlertsPage from './pages/AlertsPage';
@@ -27,9 +28,36 @@ import AdminWorkersPage from './pages/AdminWorkersPage';
 import UsersPage from './pages/UsersPage';
 import ProfilePage from './pages/ProfilePage';
 
+
+function GlobalRevealEffects() {
+  useEffect(() => {
+    const elements = Array.from(document.querySelectorAll('.reveal-on-scroll'));
+
+    if (!elements.length) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('revealed');
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.12 }
+    );
+
+    elements.forEach((el) => observer.observe(el));
+
+    return () => observer.disconnect();
+  }, []);
+
+  return null;
+}
 export default function App() {
   return (
     <ToastProvider>
+      <GlobalRevealEffects />
       <Routes>
         <Route element={<PublicLayout />}>
           <Route path="/" element={<HomePage />} />
@@ -47,7 +75,7 @@ export default function App() {
         <Route path="/register" element={<RegisterPage />} />
 
         <Route path="/admin" element={<ProtectedRoute roles={['ADMIN']}><InternalLayout role="ADMIN" /></ProtectedRoute>}>
-          <Route path="dashboard" element={<InternalDashboardPage />} />
+          <Route path="dashboard" element={<AdminDashboardPage />} />
           <Route path="users" element={<UsersPage />} />
           <Route path="workers" element={<AdminWorkersPage />} />
           <Route
@@ -105,7 +133,7 @@ export default function App() {
         </Route>
 
         <Route path="/worker" element={<ProtectedRoute roles={['TRABAJADOR']}><InternalLayout role="TRABAJADOR" /></ProtectedRoute>}>
-          <Route path="dashboard" element={<InternalDashboardPage />} />
+          <Route path="dashboard" element={<AdminDashboardPage />} />
           <Route path="users" element={<UsersPage />} />
           <Route path="products" element={<ProductsPage />} />
           <Route path="movements" element={<MovementsPage />} />
@@ -120,3 +148,6 @@ export default function App() {
     </ToastProvider>
   );
 }
+
+
+

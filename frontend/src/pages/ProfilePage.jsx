@@ -50,9 +50,7 @@ export default function ProfilePage() {
     }
   }
 
-  useEffect(() => {
-    loadProfile();
-  }, []);
+  useEffect(() => { loadProfile(); }, []);
 
   function handleProfileChange(e) {
     const { name, value } = e.target;
@@ -134,44 +132,26 @@ export default function ProfilePage() {
 
   return (
     <div className="page">
-      <div className="stack" style={{ justifyContent: 'space-between', alignItems: 'end', gap: 16, flexWrap: 'wrap' }}>
+      <section className="card reveal-on-scroll hero" style={{ marginBottom: 18 }}>
         <div>
+          <div className="small" style={{ color: '#d4af37', marginBottom: 8 }}>Cuenta personal</div>
           <h1>Mi perfil</h1>
           <p className="small">Actualiza tus datos personales y tu contraseña.</p>
         </div>
-      </div>
+      </section>
 
       {msg && <div className={`notice ${msg.type}`}>{msg.text}</div>}
 
-      <div className="grid grid-2" style={{ marginTop: 16 }}>
-        <section className="card">
+      <div className="grid grid-2">
+        <section className="card reveal-on-scroll">
           <h3>Datos personales</h3>
 
           <form onSubmit={saveProfile}>
-            <div className="form-group">
-              <label>Nombre</label>
-              <input name="firstName" value={profile.firstName} onChange={handleProfileChange} />
-            </div>
-
-            <div className="form-group">
-              <label>Apellido</label>
-              <input name="lastName" value={profile.lastName} onChange={handleProfileChange} />
-            </div>
-
-            <div className="form-group">
-              <label>Correo</label>
-              <input name="email" value={profile.email} onChange={handleProfileChange} />
-            </div>
-
-            <div className="form-group">
-              <label>Teléfono</label>
-              <input name="phone" value={profile.phone} onChange={handleProfileChange} />
-            </div>
-
-            <div className="form-group">
-              <label>Dirección</label>
-              <input name="address" value={profile.address} onChange={handleProfileChange} />
-            </div>
+            <div className="form-group"><label>Nombre</label><input name="firstName" value={profile.firstName} onChange={handleProfileChange} /></div>
+            <div className="form-group"><label>Apellido</label><input name="lastName" value={profile.lastName} onChange={handleProfileChange} /></div>
+            <div className="form-group"><label>Correo</label><input name="email" value={profile.email} onChange={handleProfileChange} /></div>
+            <div className="form-group"><label>Teléfono</label><input name="phone" value={profile.phone} onChange={handleProfileChange} /></div>
+            <div className="form-group"><label>Dirección</label><input name="address" value={profile.address} onChange={handleProfileChange} /></div>
 
             <button className="btn btn-primary" disabled={savingProfile}>
               {savingProfile ? 'Guardando...' : 'Guardar perfil'}
@@ -179,38 +159,23 @@ export default function ProfilePage() {
           </form>
         </section>
 
-        <section className="card">
+        <section className="card reveal-on-scroll">
           <h3>Cambiar contraseña</h3>
 
           <form onSubmit={changePassword}>
             <div className="form-group">
               <label>Contraseña actual</label>
-              <input
-                type="password"
-                name="currentPassword"
-                value={passwordForm.currentPassword}
-                onChange={handlePasswordChange}
-              />
+              <input type="password" name="currentPassword" value={passwordForm.currentPassword} onChange={handlePasswordChange} />
             </div>
 
             <div className="form-group">
               <label>Nueva contraseña</label>
-              <input
-                type="password"
-                name="newPassword"
-                value={passwordForm.newPassword}
-                onChange={handlePasswordChange}
-              />
+              <input type="password" name="newPassword" value={passwordForm.newPassword} onChange={handlePasswordChange} />
             </div>
 
             <div className="form-group">
               <label>Confirmar nueva contraseña</label>
-              <input
-                type="password"
-                name="confirmPassword"
-                value={passwordForm.confirmPassword}
-                onChange={handlePasswordChange}
-              />
+              <input type="password" name="confirmPassword" value={passwordForm.confirmPassword} onChange={handlePasswordChange} />
             </div>
 
             <button className="btn btn-primary" disabled={savingPassword}>

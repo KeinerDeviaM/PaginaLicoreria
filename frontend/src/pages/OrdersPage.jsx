@@ -88,27 +88,35 @@ export default function OrdersPage() {
 
   return (
     <div className="page">
-      <div className="stack" style={{ justifyContent: 'space-between', alignItems: 'end', gap: 16, flexWrap: 'wrap' }}>
-        <div>
-          <h1>Pedidos</h1>
-          <p className="small">Consulta pedidos, revisa detalles y actualiza su estado.</p>
-        </div>
+      <section className="card reveal-on-scroll hero" style={{ marginBottom: 18 }}>
+        <div className="stack" style={{ justifyContent: 'space-between', alignItems: 'end', gap: 16, flexWrap: 'wrap' }}>
+          <div>
+            <div className="small" style={{ color: '#d4af37', marginBottom: 8 }}>Operación comercial</div>
+            <h1>Pedidos</h1>
+            <p className="small">Consulta pedidos, revisa detalles y actualiza su estado.</p>
+          </div>
 
-        <input
-          placeholder="Buscar por número o cliente"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          style={{ maxWidth: 280 }}
-        />
-      </div>
+          <div className="stack" style={{ gap: 8, flexWrap: 'wrap' }}>
+            <input
+              placeholder="Buscar por número o cliente"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              style={{ maxWidth: 280 }}
+            />
+          </div>
+        </div>
+      </section>
 
       {msg && <div className={`notice ${msg.type}`}>{msg.text}</div>}
 
-      <div className="split" style={{ marginTop: 16 }}>
-        <section className="card">
-          <div className="stack" style={{ justifyContent: 'space-between', alignItems: 'center' }}>
-            <h3>Listado de pedidos</h3>
-            <span className="badge">{filtered.length}</span>
+      <div className="split">
+        <section className="card reveal-on-scroll">
+          <div className="table-header">
+            <div>
+              <h3>Listado de pedidos</h3>
+              <p className="small">{filtered.length} resultados visibles.</p>
+            </div>
+            <span className="result-pill">{filtered.length} pedidos</span>
           </div>
 
           {loading ? (
@@ -154,39 +162,24 @@ export default function OrdersPage() {
         </section>
 
         {selected && (
-          <section className="card">
-            <div className="stack" style={{ justifyContent: 'space-between', alignItems: 'center' }}>
-              <h3>Detalle del pedido</h3>
+          <section className="card reveal-on-scroll">
+            <div className="page-header" style={{ alignItems: 'center' }}>
+              <div>
+                <h3>Detalle del pedido</h3>
+                <p className="small">Vista completa para validar estado, cliente y contenido.</p>
+              </div>
               <span className="badge" style={badgeStyle(selected.status)}>
                 {selected.status}
               </span>
             </div>
 
-            <div className="grid grid-2" style={{ marginTop: 10 }}>
-              <div className="card">
-                <div className="small">Número</div>
-                <strong>{selected.orderNumber || selected.number}</strong>
-              </div>
-              <div className="card">
-                <div className="small">Total</div>
-                <strong>{money(selected.total)}</strong>
-              </div>
-              <div className="card">
-                <div className="small">Cliente</div>
-                <strong>{selected.customerName || 'No disponible'}</strong>
-              </div>
-              <div className="card">
-                <div className="small">Correo</div>
-                <strong>{selected.customerEmail || 'No disponible'}</strong>
-              </div>
-              <div className="card">
-                <div className="small">Entrega</div>
-                <strong>{selected.deliveryType || 'No disponible'}</strong>
-              </div>
-              <div className="card">
-                <div className="small">Dirección</div>
-                <strong>{selected.deliveryAddress || 'Sin dirección'}</strong>
-              </div>
+            <div className="panel-grid" style={{ marginTop: 10 }}>
+              <div className="info-tile"><div className="small">Número</div><strong>{selected.orderNumber || selected.number}</strong></div>
+              <div className="info-tile"><div className="small">Total</div><strong>{money(selected.total)}</strong></div>
+              <div className="info-tile"><div className="small">Cliente</div><strong>{selected.customerName || 'No disponible'}</strong></div>
+              <div className="info-tile"><div className="small">Correo</div><strong>{selected.customerEmail || 'No disponible'}</strong></div>
+              <div className="info-tile"><div className="small">Entrega</div><strong>{selected.deliveryType || 'No disponible'}</strong></div>
+              <div className="info-tile"><div className="small">Dirección</div><strong>{selected.deliveryAddress || 'Sin dirección'}</strong></div>
             </div>
 
             <div className="form-group" style={{ marginTop: 16 }}>
@@ -199,7 +192,7 @@ export default function OrdersPage() {
               </select>
             </div>
 
-            <div className="stack" style={{ gap: 10, flexWrap: 'wrap' }}>
+            <div className="stack" style={{ gap: 10 }}>
               <button className="btn btn-primary" onClick={updateStatus}>
                 Guardar estado
               </button>
@@ -207,55 +200,6 @@ export default function OrdersPage() {
               <Link className="btn btn-outline" to="/admin/payments">
                 Ir a pagos
               </Link>
-
-              <Link className="btn btn-outline" to="/admin/invoices">
-                Ir a facturas
-              </Link>
-            </div>
-
-            <hr className="sep" />
-
-            <h4 style={{ marginBottom: 10 }}>Productos del pedido</h4>
-
-            {(selected.details || []).length === 0 ? (
-              <div className="notice">Este pedido no tiene detalles cargados.</div>
-            ) : (
-              <div className="table-wrap">
-                <table>
-                  <thead>
-                    <tr>
-                      <th>Producto</th>
-                      <th>Cantidad</th>
-                      <th>Precio</th>
-                      <th>Subtotal</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {(selected.details || []).map((item) => (
-                      <tr key={item.detailId || `${item.productId}-${item.name}`}>
-                        <td>{item.name}</td>
-                        <td>{item.quantity}</td>
-                        <td>{money(item.price)}</td>
-                        <td>{money(item.subtotal)}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
-
-            <div className="card" style={{ marginTop: 16 }}>
-              <div className="small">Historial visual</div>
-              <div style={{ marginTop: 10, display: 'flex', flexDirection: 'column', gap: 10 }}>
-                <div className="stack" style={{ gap: 10 }}>
-                  <span className="badge" style={badgeStyle('PENDIENTE')}>1</span>
-                  <span>Pedido registrado</span>
-                </div>
-                <div className="stack" style={{ gap: 10 }}>
-                  <span className="badge" style={badgeStyle(selected.status)}>{selected.status}</span>
-                  <span>Estado actual del pedido</span>
-                </div>
-              </div>
             </div>
           </section>
         )}

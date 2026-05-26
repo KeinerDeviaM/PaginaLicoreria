@@ -1,4 +1,4 @@
-﻿const express = require('express');
+const express = require('express');
 const cors = require('cors');
 const { initDb, loadDb, saveDb, nextId, now } = require('./db');
 const { hashPassword, verifyPassword, signToken, verifyToken } = require('./auth');
@@ -6,6 +6,7 @@ const { hashPassword, verifyPassword, signToken, verifyToken } = require('./auth
 initDb();
 
 const app = express();
+const iaRoutes = require('../routes/ia');
 const PORT = process.env.PORT || 8080;
 
 app.use(cors({
@@ -14,6 +15,7 @@ app.use(cors({
 }));
 app.use(express.json());
 
+app.use('/api/ia', iaRoutes);
 function sanitizeUser(user) {
   const { passwordHash, ...rest } = user;
   return rest;
@@ -26,7 +28,7 @@ function auth(req, res, next) {
   if (!payload) return res.status(401).json({ message: 'No autenticado' });
   const db = loadDb();
   const user = db.users.find(u => u.id === payload.id && u.active);
-  if (!user) return res.status(401).json({ message: 'Usuario invÃ¡lido' });
+  if (!user) return res.status(401).json({ message: 'Usuario inválido' });
   req.user = user;
   req.db = db;
   next();
@@ -193,7 +195,7 @@ app.post('/api/auth/login', (req, res) => {
   const { email, password } = req.body;
   const user = db.users.find(u => u.email === String(email || '').toLowerCase());
   if (!user || !verifyPassword(password || '', user.passwordHash)) {
-    return res.status(401).json({ message: 'Credenciales invÃ¡lidas' });
+    return res.status(401).json({ message: 'Credenciales inválidas' });
   }
   const token = signToken({ id: user.id, role: user.role, email: user.email });
   res.json({
@@ -265,7 +267,7 @@ function simpleCollectionRoutes(path, key, label) {
     res.json({ success: true, message: `${label} actualizado`, data: item });
   });
 }
-simpleCollectionRoutes('categories', 'categories', 'CategorÃ­a');
+simpleCollectionRoutes('categories', 'categories', 'Categoría');
 simpleCollectionRoutes('brands', 'brands', 'Marca');
 simpleCollectionRoutes('suppliers', 'suppliers', 'Proveedor');
 
@@ -458,16 +460,16 @@ app.delete('/api/cart/items', auth, requireRoles('CLIENTE'), (req, res) => {
 app.post('/api/orders', auth, requireRoles('CLIENTE'), (req, res) => {
   const db = req.db;
   const cart = db.carts.find(c => c.userId === req.user.id);
-  if (!cart || !cart.items.length) return res.status(400).json({ message: 'El carrito estÃ¡ vacÃ­o' });
+  if (!cart || !cart.items.length) return res.status(400).json({ message: 'El carrito está vacío' });
   const { deliveryType, deliveryAddress = '', notes = '' } = req.body;
   if (deliveryType === 'DOMICILIO' && !deliveryAddress) {
-    return res.status(400).json({ message: 'La direcciÃ³n es obligatoria para domicilio' });
+    return res.status(400).json({ message: 'La dirección es obligatoria para domicilio' });
   }
   const details = [];
   let subtotal = 0;
   for (const item of cart.items) {
     const product = db.products.find(p => p.id === item.productId);
-    if (!product || !product.active) return res.status(400).json({ message: `Producto invÃ¡lido: ${item.productId}` });
+    if (!product || !product.active) return res.status(400).json({ message: `Producto inválido: ${item.productId}` });
     if (product.stock < item.quantity) return res.status(400).json({ message: `Stock insuficiente para ${product.name}` });
     const line = {
       id: nextId(db, 'orderDetails'),
@@ -494,7 +496,7 @@ app.post('/api/orders', auth, requireRoles('CLIENTE'), (req, res) => {
   };
   db.orders.push(order);
   cart.items = [];
-  adminNotify(db, 'PEDIDO_CREADO', 'Nuevo pedido creado', `El cliente ${req.user.firstName} ${req.user.lastName} creÃ³ el pedido ${order.number} por valor de ${order.total}.`, req.user, 'PEDIDO', order.id);
+  adminNotify(db, 'PEDIDO_CREADO', 'Nuevo pedido creado', `El cliente ${req.user.firstName} ${req.user.lastName} creó el pedido ${order.number} por valor de ${order.total}.`, req.user, 'PEDIDO', order.id);
   saveDb(db);
   res.status(201).json({ success: true, message: 'Pedido creado correctamente', data: orderResponse(db, order) });
 });
@@ -543,7 +545,7 @@ app.post('/api/payments', auth, requireRoles('CLIENTE'), (req, res) => {
     paidAt: now()
   };
   db.payments.push(payment);
-  adminNotify(db, 'PAGO_REGISTRADO', 'Pago registrado por cliente', `El cliente ${req.user.firstName} ${req.user.lastName} registrÃ³ un pago para el pedido ${order.number} por valor de ${payment.amount}.`, req.user, 'PAGO', payment.id);
+  adminNotify(db, 'PAGO_REGISTRADO', 'Pago registrado por cliente', `El cliente ${req.user.firstName} ${req.user.lastName} registró un pago para el pedido ${order.number} por valor de ${payment.amount}.`, req.user, 'PAGO', payment.id);
   saveDb(db);
   res.status(201).json({ success: true, message: 'Pago registrado correctamente', data: paymentResponse(db, payment) });
 });
@@ -578,7 +580,7 @@ function approveReject(req, res, newStatus) {
         type: 'SALIDA',
         quantity: d.quantity,
         reason: 'Venta',
-        notes: `Descuento por aprobaciÃ³n de pago ${payment.id}`,
+        notes: `Descuento por aprobación de pago ${payment.id}`,
         createdAt: now()
       });
     }
@@ -591,7 +593,7 @@ function approveReject(req, res, newStatus) {
     db,
     newStatus === 'APROBADO' ? 'PAGO_APROBADO' : 'PAGO_RECHAZADO',
     newStatus === 'APROBADO' ? 'Pago aprobado' : 'Pago rechazado',
-    `El ${req.user.role} ${req.user.firstName} ${req.user.lastName} ${newStatus === 'APROBADO' ? 'aprobÃ³' : 'rechazÃ³'} el pago del pedido ${order.number} del cliente ${user.firstName} ${user.lastName}.`,
+    `El ${req.user.role} ${req.user.firstName} ${req.user.lastName} ${newStatus === 'APROBADO' ? 'aprobó' : 'rechazó'} el pago del pedido ${order.number} del cliente ${user.firstName} ${user.lastName}.`,
     req.user,
     'PAGO',
     payment.id
@@ -645,7 +647,7 @@ app.post('/api/invoices/generate/:orderId', auth, requireRoles('ADMIN', 'TRABAJA
   };
   db.invoices.push(invoice);
   const customer = db.users.find(u => u.id === order.userId);
-  adminNotify(db, 'FACTURA_GENERADA', 'Factura generada', `El ${req.user.role} ${req.user.firstName} ${req.user.lastName} generÃ³ la factura ${invoice.number} del pedido ${order.number} del cliente ${customer.firstName} ${customer.lastName}.`, req.user, 'FACTURA', invoice.id);
+  adminNotify(db, 'FACTURA_GENERADA', 'Factura generada', `El ${req.user.role} ${req.user.firstName} ${req.user.lastName} generó la factura ${invoice.number} del pedido ${order.number} del cliente ${customer.firstName} ${customer.lastName}.`, req.user, 'FACTURA', invoice.id);
   saveDb(db);
   res.status(201).json({ success: true, message: 'Factura generada correctamente', data: invoiceResponse(db, invoice) });
 });
@@ -663,7 +665,7 @@ app.get('/api/notifications/admin/count', auth, requireRoles('ADMIN'), (req, res
 app.patch('/api/notifications/admin/:id/read', auth, requireRoles('ADMIN'), (req, res) => {
   const db = req.db;
   const notification = db.notifications.find(n => n.id === Number(req.params.id));
-  if (!notification) return res.status(404).json({ message: 'NotificaciÃ³n no encontrada' });
+  if (!notification) return res.status(404).json({ message: 'Notificación no encontrada' });
   notification.read = true;
   saveDb(db);
   res.json(notification);
@@ -729,7 +731,7 @@ app.post('/api/users/workers', auth, (req, res) => {
   if (!String(firstName).trim() || !String(lastName).trim() || !String(email).trim() || !String(password).trim()) {
     return res.status(400).json({
       success: false,
-      message: 'Nombre, apellido, correo y contraseÃ±a son obligatorios'
+      message: 'Nombre, apellido, correo y contraseña son obligatorios'
     });
   }
 
@@ -1077,21 +1079,21 @@ app.put('/api/users/profile/password', auth, (req, res) => {
   if (!String(currentPassword).trim() || !String(newPassword).trim()) {
     return res.status(400).json({
       success: false,
-      message: 'La contraseña actual y la nueva contraseña son obligatorias'
+      message: 'La contrase�a actual y la nueva contrase�a son obligatorias'
     });
   }
 
   if (String(currentUser.password) !== String(currentPassword)) {
     return res.status(400).json({
       success: false,
-      message: 'La contraseña actual no es correcta'
+      message: 'La contrase�a actual no es correcta'
     });
   }
 
   if (String(newPassword).trim().length < 6) {
     return res.status(400).json({
       success: false,
-      message: 'La nueva contraseña debe tener al menos 6 caracteres'
+      message: 'La nueva contrase�a debe tener al menos 6 caracteres'
     });
   }
 
@@ -1100,7 +1102,7 @@ app.put('/api/users/profile/password', auth, (req, res) => {
 
   return res.json({
     success: true,
-    message: 'Contraseña actualizada correctamente'
+    message: 'Contrase�a actualizada correctamente'
   });
 });
 

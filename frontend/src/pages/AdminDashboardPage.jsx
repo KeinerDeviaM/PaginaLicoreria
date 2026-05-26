@@ -1,111 +1,115 @@
-import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+﻿import React, { useEffect, useState } from 'react';
 import { api } from '../api';
 
 export default function AdminDashboardPage() {
-  const [stats, setStats] = useState(null);
-  const [error, setError] = useState('');
+  const [stats, setStats] = useState({
+    users: 0,
+    workers: 0,
+    products: 0,
+    lowStock: 0,
+    orders: 0,
+    paymentsPending: 0
+  });
+
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    async function loadStats() {
+    async function load() {
       try {
-        setLoading(true);
-        setError('');
-        const { data } = await api.get('/admin/stats');
-        setStats(data.data);
-      } catch (err) {
-        setError(err.response?.data?.message || 'No se pudo cargar el dashboard');
+        const [usersRes, workersRes, productsRes, ordersRes, paymentsRes] = await Promise.all([
+          api.get('/users'),
+          api.get('/users/workers'),
+          api.get('/products'),
+          api.get('/orders'),
+          api.get('/payments')
+        ]);
+
+        const users = Array.isArray(usersRes.data?.data) ? usersRes.data.data : usersRes.data || [];
+        const workers = Array.isArray(workersRes.data?.data) ? workersRes.data.data : workersRes.data || [];
+        const products = Array.isArray(productsRes.data?.data) ? productsRes.data.data : productsRes.data || [];
+        const orders = Array.isArray(ordersRes.data?.data) ? ordersRes.data.data : ordersRes.data || [];
+        const payments = Array.isArray(paymentsRes.data?.data) ? paymentsRes.data.data : paymentsRes.data || [];
+
+        setStats({
+          users: users.length,
+          workers: workers.length,
+          products: products.length,
+          lowStock: products.filter((p) => Number(p.stock || 0) <= Number(p.minimumStock || 0)).length,
+          orders: orders.length,
+          paymentsPending: payments.filter((p) => String(p.status || '').toUpperCase() === 'PENDIENTE').length
+        });
       } finally {
         setLoading(false);
       }
     }
 
-    loadStats();
+    load();
   }, []);
 
   if (loading) {
     return (
-      <div className="container page">
-        <div className="notice">Cargando dashboard...</div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="container page">
-        <div className="notice error">{error}</div>
-      </div>
-    );
-  }
-
-  const cards = [
-    { title: 'Productos', value: stats?.totalProducts ?? 0 },
-    { title: 'Trabajadores', value: stats?.totalWorkers ?? 0 },
-    { title: 'Clientes', value: stats?.totalCustomers ?? 0 },
-    { title: 'Pedidos', value: stats?.totalOrders ?? 0 },
-    { title: 'Pagos', value: stats?.totalPayments ?? 0 },
-    { title: 'Facturas', value: stats?.totalInvoices ?? 0 },
-    { title: 'Stock bajo', value: stats?.lowStockCount ?? 0 },
-    { title: 'Pagos pendientes', value: stats?.pendingPaymentsCount ?? 0 }
-  ];
-
-  return (
-    <div className="container page">
-      <div className="card" style={{ marginBottom: 20 }}>
-        <h1 style={{ marginBottom: 8 }}>Dashboard admin</h1>
-        <p className="small" style={{ marginBottom: 18 }}>
-          Resumen general del sistema.
-        </p>
-
-        <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
-          <Link
-            to="/admin/workers"
-            className="btn btn-primary"
-            style={{
-              padding: '14px 22px',
-              fontSize: '16px',
-              fontWeight: '700',
-              borderRadius: '14px',
-              display: 'inline-flex',
-              alignItems: 'center',
-              justifyContent: 'center'
-            }}
-          >
-            Crear trabajador
-          </Link>
-
-          <Link
-            to="/admin/notifications"
-            className="btn btn-outline"
-            style={{
-              padding: '14px 22px',
-              fontSize: '16px',
-              borderRadius: '14px',
-              display: 'inline-flex',
-              alignItems: 'center',
-              justifyContent: 'center'
-            }}
-          >
-            Ver notificaciones
-          </Link>
+      <div className="page">
+        <div className="grid grid-3">
+          <section className="card skeleton-box"></section>
+          <section className="card skeleton-box"></section>
+          <section className="card skeleton-box"></section>
+          <section className="card skeleton-box"></section>
+          <section className="card skeleton-box"></section>
+          <section className="card skeleton-box"></section>
         </div>
       </div>
+    );
+  }
 
-      <div className="grid-4" style={{ marginTop: 20 }}>
-        {cards.map((card) => (
-          <div key={card.title} className="card">
-            <p className="small">{card.title}</p>
-            <h2 style={{ marginTop: 8 }}>{card.value}</h2>
-          </div>
-        ))}
+  return (
+    <div className="page">
+      <section className="card reveal-on-scroll hero" style={{ marginBottom: 18 }}>
+        <div>
+          <div className="small" style={{ color: '#d4af37', marginBottom: 8 }}>Panel administrativo</div>
+          <h1>Dashboard general</h1>
+          <p className="small">Resumen ejecutivo del estado actual del sistema.</p>
+        </div>
+      </section>
+
+      <div className="grid grid-3">
+        <section className="card reveal-on-scroll stat-card">
+          <div className="small">Usuarios registrados</div>
+          <h2>{stats.users}</h2>
+        </section>
+
+        <section className="card reveal-on-scroll stat-card">
+          <div className="small">Trabajadores</div>
+          <h2>{stats.workers}</h2>
+        </section>
+
+        <section className="card reveal-on-scroll stat-card">
+          <div className="small">Productos</div>
+          <h2>{stats.products}</h2>
+        </section>
+
+        <section className="card reveal-on-scroll stat-card">
+          <div className="small">Stock bajo</div>
+          <h2>{stats.lowStock}</h2>
+        </section>
+
+        <section className="card reveal-on-scroll stat-card">
+          <div className="small">Pedidos</div>
+          <h2>{stats.orders}</h2>
+        </section>
+
+        <section className="card reveal-on-scroll stat-card">
+          <div className="small">Pagos pendientes</div>
+          <h2>{stats.paymentsPending}</h2>
+        </section>
       </div>
 
-      <div className="card" style={{ marginTop: 20 }}>
-        <p className="small">Ventas acumuladas</p>
-        <h2>${Number(stats?.totalSales || 0).toLocaleString('es-CO')}</h2>
-      </div>
+      <section className="card reveal-on-scroll" style={{ marginTop: 18 }}>
+        <h3>Estado del sistema</h3>
+        <p className="small">
+          Este panel te permite ver rápidamente el comportamiento general del negocio:
+          cuentas registradas, inventario, pedidos y pagos aún por revisar.
+        </p>
+      </section>
     </div>
   );
 }

@@ -1,0 +1,148 @@
+﻿import React from 'react';
+import { Link } from 'react-router-dom';
+
+export default function HomePage() {
+  return (
+    <div className="page">
+      <section
+        className="card reveal-on-scroll hero"
+        style={{
+          marginBottom: 20,
+          padding: 32,
+          minHeight: 420,
+          display: 'grid',
+          alignItems: 'center',
+          background: `
+            radial-gradient(circle at top left, rgba(212,175,55,0.14), transparent 22%),
+            radial-gradient(circle at right center, rgba(255,255,255,0.05), transparent 20%),
+            linear-gradient(135deg, rgba(18,18,18,0.98), rgba(10,10,10,0.96))
+          `
+        }}
+      >
+        <div style={{ maxWidth: 780, position: 'relative', zIndex: 2 }}>
+          <div
+            className="small"
+            style={{
+              display: 'inline-block',
+              padding: '8px 14px',
+              borderRadius: 999,
+              border: '1px solid rgba(212,175,55,0.28)',
+              background: 'rgba(212,175,55,0.08)',
+              color: '#d4af37',
+              marginBottom: 14
+            }}
+          >
+            Licores, vinos, cervezas y más
+          </div>
+
+          <h1
+            style={{
+              fontSize: 'clamp(2.3rem, 5vw, 4.5rem)',
+              lineHeight: 1.05,
+              marginBottom: 14,
+              maxWidth: 820
+            }}
+          >
+            Encuentra tus bebidas favoritas al mejor precio y en un solo lugar
+          </h1>
+
+          <p
+            className="small"
+            style={{
+              fontSize: '1rem',
+              lineHeight: 1.8,
+              maxWidth: 700,
+              marginBottom: 22
+            }}
+          >
+            Compra whiskies, rones, vodkas, tequilas, vinos y cervezas con una experiencia rápida,
+            clara y pensada para que encuentres lo que buscas sin complicaciones.
+          </p>
+
+          <div className="stack" style={{ gap: 12, flexWrap: 'wrap' }}>
+            <Link to="/shop/products" className="btn btn-primary">Comprar ahora</Link>
+            <Link to="/cart" className="btn btn-outline">Ver carrito</Link>
+          </div>
+        </div>
+      </section>
+
+      <div className="grid grid-3" style={{ marginBottom: 20 }}>
+        <section className="card reveal-on-scroll stat-card">
+          <div className="small" style={{ color: '#d4af37', marginBottom: 8 }}>Variedad</div>
+          <h3 style={{ marginBottom: 8 }}>Marcas reconocidas</h3>
+          <p className="small" style={{ lineHeight: 1.7 }}>
+            Encuentra bebidas para cualquier ocasión, desde opciones clásicas hasta botellas más especiales.
+          </p>
+        </section>
+
+        <section className="card reveal-on-scroll stat-card">
+          <div className="small" style={{ color: '#d4af37', marginBottom: 8 }}>Compra fácil</div>
+          <h3 style={{ marginBottom: 8 }}>Pide en pocos pasos</h3>
+          <p className="small" style={{ lineHeight: 1.7 }}>
+            Agrega al carrito, confirma tu pedido y completa tu compra de forma rápida y sencilla.
+          </p>
+        </section>
+
+        <section className="card reveal-on-scroll stat-card">
+          <div className="small" style={{ color: '#d4af37', marginBottom: 8 }}>Disponibilidad</div>
+          <h3 style={{ marginBottom: 8 }}>Consulta stock al instante</h3>
+          <p className="small" style={{ lineHeight: 1.7 }}>
+            Revisa productos disponibles, cantidades y precios actualizados antes de comprar.
+          </p>
+        </section>
+      </div>
+
+      <section className="card reveal-on-scroll" style={{ marginBottom: 20 }}>
+        <div className="page-header">
+          <div>
+            <div className="small" style={{ color: '#d4af37', marginBottom: 8 }}>Compra con confianza</div>
+            <h2 style={{ marginBottom: 8 }}>Todo lo que necesitas en una sola tienda</h2>
+            <p className="small" style={{ maxWidth: 760, lineHeight: 1.8 }}>
+              Busca por categorías, revisa detalles del producto, controla tu carrito y sigue tus pedidos fácilmente.
+            </p>
+          </div>
+        </div>
+
+        <div className="grid grid-3" style={{ marginTop: 18 }}>
+          <div className="card" style={{ background: 'rgba(255,255,255,0.02)' }}>
+            <h3>Whiskies y rones</h3>
+            <p className="small">Opciones ideales para regalar, compartir o disfrutar en ocasiones especiales.</p>
+          </div>
+
+          <div className="card" style={{ background: 'rgba(255,255,255,0.02)' }}>
+            <h3>Vinos y tequilas</h3>
+            <p className="small">Botellas para cenas, celebraciones y momentos que merecen algo mejor.</p>
+          </div>
+
+          <div className="card" style={{ background: 'rgba(255,255,255,0.02)' }}>
+            <h3>Cervezas y más</h3>
+            <p className="small">Alternativas frescas y prácticas para reuniones, eventos y consumo diario.</p>
+          </div>
+        </div>
+      </section>
+
+      <section
+        className="card reveal-on-scroll"
+        style={{
+          background: 'linear-gradient(135deg, rgba(212,175,55,0.08), rgba(255,255,255,0.02))',
+          border: '1px solid rgba(212,175,55,0.18)'
+        }}
+      >
+        <div className="stack" style={{ justifyContent: 'space-between', alignItems: 'center', gap: 16, flexWrap: 'wrap' }}>
+          <div>
+            <div className="small" style={{ color: '#d4af37', marginBottom: 8 }}>Empieza ahora</div>
+            <h2 style={{ marginBottom: 8 }}>Explora el catálogo y haz tu pedido hoy</h2>
+            <p className="small" style={{ lineHeight: 1.8 }}>
+              Entra al catálogo, elige tus productos favoritos y compra de forma rápida.
+            </p>
+          </div>
+
+          <div className="stack" style={{ gap: 10, flexWrap: 'wrap' }}>
+            <Link to="/shop/products" className="btn btn-primary">Ver productos</Link>
+            <Link to="/orders" className="btn btn-outline">Mis pedidos</Link>
+          </div>
+        </div>
+      </section>
+    </div>
+  );
+}

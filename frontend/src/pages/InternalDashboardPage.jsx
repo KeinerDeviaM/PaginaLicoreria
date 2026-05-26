@@ -1,61 +1,78 @@
-﻿import { Link } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { api } from '../api';
+import { getAuth } from '../auth';
 
 export default function InternalDashboardPage() {
   const [data, setData] = useState(null);
+  const { user } = getAuth();
+  const isAdmin = user?.role === 'ADMIN';
 
   useEffect(() => {
     api.get('/dashboard/summary').then(({ data }) => setData(data));
   }, []);
 
-  if (!data) return <div>Cargando...</div>;
+  if (!data) return <div className="notice">Cargando dashboard...</div>;
 
   return (
-    <div className="page">
-      <h1>Dashboard</h1>
+    <div className="page page-shell">
+      <section className="toolbar-card reveal-up">
+        <div className="page-header">
+          <div>
+            <div className="eyebrow">Centro de control</div>
+            <h1>Dashboard</h1>
+            <p className="small">
+              Vista rapida del inventario y la operacion diaria para tomar decisiones mas rapido.
+            </p>
+          </div>
 
-      <div style={{ marginBottom: 20, display: 'flex', gap: 12, flexWrap: 'wrap' }}>
-        <Link
-          to="/admin/workers"
-          className="btn btn-primary"
-          style={{
-            padding: '12px 18px',
-            fontWeight: '700',
-            borderRadius: '12px',
-            display: 'inline-flex',
-            alignItems: 'center',
-            justifyContent: 'center'
-          }}
-        >
-          Crear trabajador
-        </Link>
-      </div>
+          <div className="stack">
+            {isAdmin && (
+              <Link to="/admin/workers" className="btn btn-primary">
+                Crear trabajador
+              </Link>
+            )}
+            <Link to={isAdmin ? '/admin/products' : '/worker/products'} className="btn btn-outline">
+              Ver productos
+            </Link>
+          </div>
+        </div>
+      </section>
 
-      <div className="grid grid-4">
-        <div className="kpi">
-          <div className="value">{data.totalProducts}</div>
-          <div className="label">Productos</div>
+      <section className="metric-grid">
+        <article className="metric-card reveal-up">
+          <span className="small">Catalogo</span>
+          <strong>{data.totalProducts}</strong>
+          <span className="small">Productos registrados</span>
+        </article>
+
+        <article className="metric-card reveal-up reveal-delay-1">
+          <span className="small">Estructura</span>
+          <strong>{data.totalCategories}</strong>
+          <span className="small">Categorias activas</span>
+        </article>
+
+        <article className="metric-card reveal-up reveal-delay-2">
+          <span className="small">Atencion</span>
+          <strong>{data.lowStock}</strong>
+          <span className="small">Productos con stock bajo</span>
+        </article>
+
+        <article className="metric-card reveal-up reveal-delay-3">
+          <span className="small">Valor</span>
+          <strong>${Number(data.inventoryValue || 0).toLocaleString('es-CO')}</strong>
+          <span className="small">Inventario valorizado</span>
+        </article>
+      </section>
+
+      <section className="table-card reveal-up reveal-delay-1">
+        <div className="table-header">
+          <div>
+            <h3>Movimientos recientes</h3>
+            <p className="small">Ultimos cambios registrados sobre productos y existencias.</p>
+          </div>
         </div>
 
-        <div className="kpi">
-          <div className="value">{data.totalCategories}</div>
-          <div className="label">Categorías</div>
-        </div>
-
-        <div className="kpi">
-          <div className="value">{data.lowStock}</div>
-          <div className="label">Stock bajo</div>
-        </div>
-
-        <div className="kpi">
-          <div className="value">${Number(data.inventoryValue || 0).toLocaleString('es-CO')}</div>
-          <div className="label">Valor inventario</div>
-        </div>
-      </div>
-
-      <div className="card" style={{ marginTop: 16 }}>
-        <h3>Movimientos recientes</h3>
         <div className="table-wrap">
           <table>
             <thead>
@@ -68,19 +85,19 @@ export default function InternalDashboardPage() {
               </tr>
             </thead>
             <tbody>
-              {(data.recentMovements || []).map((m) => (
-                <tr key={m.id}>
-                  <td>{m.productName}</td>
-                  <td>{m.type}</td>
-                  <td>{m.quantity}</td>
-                  <td>{m.userName}</td>
-                  <td>{new Date(m.createdAt).toLocaleString('es-CO')}</td>
+              {(data.recentMovements || []).map((movement) => (
+                <tr key={movement.id}>
+                  <td>{movement.productName}</td>
+                  <td>{movement.type}</td>
+                  <td>{movement.quantity}</td>
+                  <td>{movement.userName}</td>
+                  <td>{new Date(movement.createdAt).toLocaleString('es-CO')}</td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
-      </div>
+      </section>
     </div>
   );
 }

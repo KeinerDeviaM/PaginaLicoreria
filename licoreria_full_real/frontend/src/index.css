@@ -1,4 +1,4 @@
-:root {
+﻿:root {
   --bg: #0f0f10;
   --panel: #18181b;
   --panel-2: #212124;
@@ -379,5 +379,613 @@ hr.sep {
     left: 16px;
     right: 16px;
     top: 76px;
+  }
+}
+
+/* =========================
+   PAQUETE VISUAL 2
+   ========================= */
+
+/* Reveal on scroll */
+.reveal-on-scroll {
+  opacity: 0;
+  transform: translateY(14px);
+  transition:
+    opacity .45s ease,
+    transform .45s ease;
+  filter: none;
+  will-change: opacity, transform;
+}
+
+.reveal-on-scroll.revealed {
+  opacity: 1;
+  transform: translateY(0);
+  filter: none;
+}
+
+/* Skeleton shimmer */
+.skeleton,
+.skeleton-line,
+.skeleton-box {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(
+    90deg,
+    rgba(255,255,255,0.05) 0%,
+    rgba(255,255,255,0.08) 20%,
+    rgba(255,255,255,0.05) 40%
+  );
+  background-size: 200% 100%;
+  animation: skeletonShimmer 1.4s linear infinite;
+  border-radius: 12px;
+}
+
+.skeleton-line {
+  height: 14px;
+  margin: 8px 0;
+}
+
+.skeleton-box {
+  min-height: 180px;
+}
+
+@keyframes skeletonShimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* Hero / home glow */
+.hero,
+.home-hero,
+.banner,
+[class*="hero"] {
+  position: relative;
+  overflow: hidden;
+}
+
+.hero::before,
+.home-hero::before,
+.banner::before,
+[class*="hero"]::before {
+  content: "";
+  position: absolute;
+  inset: -20%;
+  background:
+    radial-gradient(circle at 20% 20%, rgba(212,175,55,0.12), transparent 22%),
+    radial-gradient(circle at 80% 20%, rgba(255,255,255,0.06), transparent 18%),
+    radial-gradient(circle at 50% 80%, rgba(212,175,55,0.08), transparent 24%);
+  pointer-events: none;
+  animation: heroFloatGlow 10s ease-in-out infinite alternate;
+}
+
+@keyframes heroFloatGlow {
+  from { transform: translateY(0) scale(1); opacity: .8; }
+  to { transform: translateY(-8px) scale(1.03); opacity: 1; }
+}
+
+/* Cat�logo / cards premium */
+.catalog-card,
+.product-card,
+[class*="catalog"] .card,
+[class*="product-grid"] .card,
+[class*="products-grid"] .card {
+  position: relative;
+  isolation: isolate;
+}
+
+.catalog-card::after,
+.product-card::after,
+[class*="catalog"] .card::after,
+[class*="product-grid"] .card::after,
+[class*="products-grid"] .card::after {
+  content: "";
+  position: absolute;
+  inset: auto 10% 0 10%;
+  height: 20px;
+  background: radial-gradient(ellipse at center, rgba(212,175,55,0.16), transparent 70%);
+  filter: blur(12px);
+  opacity: 0;
+  transition: opacity .28s ease;
+  z-index: -1;
+}
+
+.catalog-card:hover::after,
+.product-card:hover::after,
+[class*="catalog"] .card:hover::after,
+[class*="product-grid"] .card:hover::after,
+[class*="products-grid"] .card:hover::after {
+  opacity: 1;
+}
+
+.catalog-card:hover,
+.product-card:hover,
+[class*="catalog"] .card:hover,
+[class*="product-grid"] .card:hover,
+[class*="products-grid"] .card:hover {
+  transform: translateY(-6px) scale(1.01);
+}
+
+/* Imagen con spotlight */
+.product-image-wrap,
+[class*="image-wrap"] {
+  position: relative;
+  overflow: hidden;
+  border-radius: 16px;
+}
+
+.product-image-wrap::before,
+[class*="image-wrap"]::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.08), transparent 35%, transparent 65%, rgba(212,175,55,0.08));
+  opacity: .55;
+  pointer-events: none;
+  transition: opacity .28s ease;
+}
+
+.product-image-wrap:hover::before,
+[class*="image-wrap"]:hover::before {
+  opacity: .95;
+}
+
+/* Etiquetas/precios */
+.price,
+[class*="price"],
+strong.price {
+  transition: transform .2s ease, color .2s ease;
+}
+
+.card:hover .price,
+.card:hover [class*="price"] {
+  transform: translateY(-1px);
+}
+
+/* Tablas m�s premium */
+table {
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+table thead th {
+  background: rgba(255,255,255,0.03);
+  backdrop-filter: blur(4px);
+}
+
+table tbody tr td:first-child {
+  border-left: 1px solid rgba(255,255,255,0.04);
+}
+
+table tbody tr td:last-child {
+  border-right: 1px solid rgba(255,255,255,0.04);
+}
+
+/* Contenedores con reveal autom�tico */
+.page .card,
+.page .table-wrap,
+.page form,
+.page .notice,
+.page .split > section {
+  will-change: transform, opacity;
+}
+
+/* Animaci�n suave para bloques importantes */
+.page .card,
+.page .table-wrap,
+.page .split > section,
+.page form {
+  animation: subtleLiftIn .45s ease both;
+}
+
+@keyframes subtleLiftIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* N�meros/estad�sticas */
+.stat-card,
+.metric-card,
+[class*="stat"] .card,
+[class*="metric"] .card {
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.035), rgba(255,255,255,0.02)),
+    linear-gradient(135deg, rgba(212,175,55,0.06), transparent 55%);
+}
+
+/* Overlay de lujo en im�genes grandes */
+img.hero-image,
+img.banner-image,
+.card img:first-child {
+  transition: transform .45s ease, filter .35s ease;
+}
+
+.card:hover img.hero-image,
+.card:hover img.banner-image,
+.card:hover img:first-child {
+  filter: brightness(1.04) contrast(1.03);
+}
+
+/* Chips y filtros */
+select:hover,
+input:hover,
+textarea:hover {
+  border-color: rgba(212,175,55,0.22);
+}
+
+/* Navbar / headers pegajosos un poco m�s premium */
+header,
+nav {
+  backdrop-filter: blur(8px);
+}
+
+/* Microanimaci�n para �conos */
+svg,
+i {
+  transition: transform .2s ease, opacity .2s ease;
+}
+
+.btn:hover svg,
+.btn:hover i,
+.card:hover svg,
+.card:hover i {
+  transform: translateY(-1px);
+}
+
+/* Hover sutil para links de texto */
+a:hover {
+  opacity: .95;
+}
+
+/* Botones de tabla / acciones */
+.table-wrap .btn,
+table .btn {
+  box-shadow: none;
+}
+
+.table-wrap .btn:hover,
+table .btn:hover {
+  box-shadow: 0 8px 18px rgba(0,0,0,0.2);
+}
+
+/* Responsive fine tuning */
+@media (max-width: 768px) {
+  .catalog-card:hover,
+  .product-card:hover,
+  [class*="catalog"] .card:hover,
+  [class*="product-grid"] .card:hover,
+  [class*="products-grid"] .card:hover {
+    transform: translateY(-3px) scale(1.005);
+  }
+
+  .reveal-on-scroll {
+    transform: translateY(8px);
+    filter: none;
+  }
+}
+
+/* =========================
+   PAQUETE FINAL PREMIUM UI
+   ========================= */
+
+/* Layout general */
+.container,
+.page,
+main {
+  position: relative;
+}
+
+.page {
+  padding-bottom: 24px;
+}
+
+/* Headers de secci�n */
+.page h1 {
+  font-weight: 800;
+  letter-spacing: .2px;
+}
+
+.page .small {
+  opacity: .88;
+}
+
+/* Navbar / topbar */
+header,
+nav,
+.topbar,
+.navbar {
+  background:
+    linear-gradient(180deg, rgba(18,18,18,0.92), rgba(14,14,14,0.92));
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  backdrop-filter: blur(10px);
+}
+
+header .btn,
+nav .btn {
+  white-space: nowrap;
+}
+
+/* Sidebar / panel interno */
+aside,
+.sidebar,
+.internal-sidebar,
+[class*="sidebar"] {
+  background:
+    linear-gradient(180deg, rgba(20,20,20,0.96), rgba(12,12,12,0.96));
+  border-right: 1px solid rgba(255,255,255,0.05);
+  backdrop-filter: blur(10px);
+}
+
+aside a,
+.sidebar a,
+.internal-sidebar a,
+[class*="sidebar"] a {
+  transition:
+    background .2s ease,
+    color .2s ease,
+    transform .2s ease,
+    border-color .2s ease;
+  border-radius: 12px;
+}
+
+aside a:hover,
+.sidebar a:hover,
+.internal-sidebar a:hover,
+[class*="sidebar"] a:hover {
+  background: rgba(255,255,255,0.04);
+  color: #fff;
+  transform: translateX(3px);
+}
+
+aside a.active,
+.sidebar a.active,
+.internal-sidebar a.active,
+[class*="sidebar"] a.active {
+  background: rgba(212,175,55,0.12);
+  border: 1px solid rgba(212,175,55,0.22);
+  color: #fff;
+  box-shadow: 0 10px 22px rgba(212,175,55,0.08);
+}
+
+/* Cards de stats y dashboards */
+.stat-card,
+.metric-card,
+.dashboard-card,
+[class*="stat"] .card,
+[class*="metric"] .card {
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.015)),
+    linear-gradient(135deg, rgba(212,175,55,0.07), transparent 56%);
+  min-height: 120px;
+}
+
+.stat-card h2,
+.metric-card h2,
+.dashboard-card h2 {
+  font-size: clamp(1.7rem, 3vw, 2.5rem);
+  margin-top: 8px;
+  color: #fff;
+}
+
+/* Tablas administrativas */
+.table-wrap {
+  background: rgba(255,255,255,0.015);
+  border: 1px solid rgba(255,255,255,0.04);
+  box-shadow: 0 14px 30px rgba(0,0,0,0.18);
+}
+
+table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  font-weight: 700;
+  color: rgba(255,255,255,0.9);
+}
+
+table tbody tr {
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+}
+
+table tbody tr:hover td {
+  color: #fff;
+}
+
+/* P�ginas de pedidos, pagos, alertas, notificaciones */
+.orders-card,
+.payments-card,
+.alerts-card,
+.notifications-card,
+.invoices-card,
+[class*="orders"] .card,
+[class*="payments"] .card,
+[class*="alerts"] .card,
+[class*="notifications"] .card,
+[class*="invoices"] .card {
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.012)),
+    linear-gradient(135deg, rgba(212,175,55,0.05), transparent 50%);
+}
+
+/* Formularios internos */
+form.card,
+.card form {
+  position: relative;
+}
+
+.card form .btn {
+  margin-top: 6px;
+}
+
+/* Inputs con mejor presencia */
+input,
+select,
+textarea {
+  background: rgba(255,255,255,0.02);
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: rgba(255,255,255,0.42);
+}
+
+/* Chips / badges m�s elegantes */
+.badge {
+  font-weight: 700;
+  letter-spacing: .02em;
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,0.06);
+}
+
+.badge.success {
+  background: rgba(22,163,74,.14);
+  color: #9cf2ba;
+}
+
+.badge.warning {
+  background: rgba(245,158,11,.14);
+  color: #ffd27e;
+}
+
+.badge.danger {
+  background: rgba(239,68,68,.14);
+  color: #ffb3b3;
+}
+
+/* Bloques resumen / KPI */
+.summary-box,
+.resume-box,
+[class*="summary"] .card,
+[class*="resume"] .card {
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.025), rgba(255,255,255,0.015));
+  border: 1px solid rgba(255,255,255,0.05);
+}
+
+/* Enlaces internos */
+.page a:not(.btn) {
+  text-underline-offset: 3px;
+}
+
+/* Cards clickables */
+.card[role="button"],
+.card.clickable,
+.card a {
+  transition: opacity .18s ease;
+}
+
+/* Listas y tablas m�s respirables */
+table td,
+table th {
+  padding-top: 14px;
+  padding-bottom: 14px;
+}
+
+ul, ol {
+  line-height: 1.7;
+}
+
+/* Sombras finas en im�genes peque�as */
+img {
+  transition: transform .35s ease, box-shadow .35s ease, filter .35s ease;
+}
+
+.card:hover img {
+  box-shadow: 0 14px 28px rgba(0,0,0,0.18);
+}
+
+/* Secciones tipo hero peque�as */
+.section-hero,
+.page > .card:first-child {
+  box-shadow: 0 18px 38px rgba(0,0,0,0.26);
+}
+
+/* Hover de paneles del admin */
+.dashboard-card:hover,
+.stat-card:hover,
+.metric-card:hover {
+  transform: translateY(-5px);
+}
+
+/* Filtros superiores */
+.stack input,
+.stack select {
+  min-height: 42px;
+}
+
+/* Divisores sutiles */
+hr {
+  border: none;
+  border-top: 1px solid rgba(255,255,255,0.06);
+  margin: 18px 0;
+}
+
+/* Responsive general */
+@media (max-width: 980px) {
+  .split {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 16px !important;
+  }
+
+  .grid.grid-3,
+  .grid-3 {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+@media (max-width: 768px) {
+  table {
+    font-size: .94rem;
+  }
+
+  .card {
+    border-radius: 18px;
+  }
+
+  .page h1 {
+    font-size: 1.8rem;
+  }
+}
+
+@media (max-width: 560px) {
+  .stack {
+    gap: 10px !important;
+  }
+
+  .btn {
+    width: 100%;
+  }
+
+  header .btn,
+  nav .btn {
+    width: auto;
+  }
+}
+
+
+
+
+
+@media (max-width: 980px) {
+  .hero > div[style*="grid-template-columns: '1.15fr .85fr'"] {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+@media (max-width: 980px) {
+  .page section.card > div[style*="grid-template-columns: '1.05fr 0.95fr'"] {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+@media (max-width: 640px) {
+  .page .panel-grid {
+    grid-template-columns: 1fr !important;
   }
 }

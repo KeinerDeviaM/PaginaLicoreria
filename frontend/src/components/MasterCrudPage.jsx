@@ -12,7 +12,9 @@ export default function MasterCrudPage({ endpoint, title, fields }) {
     setRows(data);
   }
 
-  useEffect(() => { load(); }, [endpoint]);
+  useEffect(() => {
+    load();
+  }, [endpoint]);
 
   async function submit(e) {
     e.preventDefault();
@@ -33,7 +35,7 @@ export default function MasterCrudPage({ endpoint, title, fields }) {
   }
 
   async function toggle(id) {
-    if (!confirm('¿Seguro que deseas cambiar el estado?')) return;
+    if (!confirm('Seguro que deseas cambiar el estado?')) return;
     try {
       await api.patch(`${endpoint}/${id}/toggle`);
       setMessage({ type: 'success', text: 'Estado actualizado' });
@@ -49,54 +51,106 @@ export default function MasterCrudPage({ endpoint, title, fields }) {
   }
 
   return (
-    <div className="page">
-      <h1>{title}</h1>
+    <div className="page page-shell">
+      <section className="toolbar-card reveal-up">
+        <div className="page-header">
+          <div>
+            <div className="eyebrow">Gestion maestra</div>
+            <h1>{title}</h1>
+            <p className="small">Administra registros, descripciones y estados con una vista mas clara.</p>
+          </div>
+        </div>
+      </section>
+
       {message && <div className={`notice ${message.type}`}>{message.text}</div>}
+
       <div className="split">
-        <section className="card">
+        <section className="card reveal-up">
           <h3>{editingId ? `Editar ${title}` : `Nuevo ${title}`}</h3>
           <form onSubmit={submit}>
-            {fields.map((f) => (
-              <div key={f.name} className="form-group">
-                <label>{f.label}</label>
-                {f.type === 'textarea' ? (
-                  <textarea value={form[f.name] || ''} onChange={(e) => setForm({ ...form, [f.name]: e.target.value })} />
+            {fields.map((field) => (
+              <div key={field.name} className="form-group">
+                <label>{field.label}</label>
+                {field.type === 'textarea' ? (
+                  <textarea
+                    value={form[field.name] || ''}
+                    onChange={(e) => setForm({ ...form, [field.name]: e.target.value })}
+                  />
                 ) : (
-                  <input value={form[f.name] || ''} onChange={(e) => setForm({ ...form, [f.name]: e.target.value })} />
+                  <input
+                    value={form[field.name] || ''}
+                    onChange={(e) => setForm({ ...form, [field.name]: e.target.value })}
+                  />
                 )}
               </div>
             ))}
             <div className="stack">
               <button className="btn btn-primary">{editingId ? 'Actualizar' : 'Crear'}</button>
-              {editingId && <button type="button" className="btn btn-outline" onClick={() => { setEditingId(null); setForm({}); }}>Cancelar</button>}
+              {editingId && (
+                <button
+                  type="button"
+                  className="btn btn-outline"
+                  onClick={() => {
+                    setEditingId(null);
+                    setForm({});
+                  }}
+                >
+                  Cancelar
+                </button>
+              )}
             </div>
           </form>
         </section>
-        <section className="card">
-          <h3>Listado</h3>
+
+        <section className="table-card reveal-up reveal-delay-1">
+          <div className="table-header">
+            <div>
+              <h3>Listado</h3>
+              <p className="small">{rows.length} registros cargados.</p>
+            </div>
+          </div>
+
           <div className="table-wrap">
             <table>
               <thead>
                 <tr>
                   <th>ID</th>
-                  {fields.map(f => <th key={f.name}>{f.label}</th>)}
+                  {fields.map((field) => (
+                    <th key={field.name}>{field.label}</th>
+                  ))}
                   <th>Estado</th>
                   <th>Acciones</th>
                 </tr>
               </thead>
               <tbody>
-                {rows.map(r => (
-                  <tr key={r.id}>
-                    <td>{r.id}</td>
-                    {fields.map(f => <td key={f.name}>{r[f.name]}</td>)}
-                    <td><span className={`badge ${r.active ? 'success' : 'danger'}`}>{r.active ? 'Activo' : 'Inactivo'}</span></td>
-                    <td className="stack">
-                      <button className="btn btn-outline" onClick={() => startEdit(r)}>Editar</button>
-                      <button className="btn btn-wine" onClick={() => toggle(r.id)}>{r.active ? 'Desactivar' : 'Activar'}</button>
+                {rows.map((row) => (
+                  <tr key={row.id}>
+                    <td>{row.id}</td>
+                    {fields.map((field) => (
+                      <td key={field.name}>{row[field.name]}</td>
+                    ))}
+                    <td>
+                      <span className={`badge ${row.active ? 'success' : 'danger'}`}>
+                        {row.active ? 'Activo' : 'Inactivo'}
+                      </span>
+                    </td>
+                    <td>
+                      <div className="stack">
+                        <button className="btn btn-outline" onClick={() => startEdit(row)}>
+                          Editar
+                        </button>
+                        <button className="btn btn-wine" onClick={() => toggle(row.id)}>
+                          {row.active ? 'Desactivar' : 'Activar'}
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))}
-                {!rows.length && <tr><td colSpan={fields.length + 3}>Sin registros</td></tr>}
+                {!rows.length && (
+                  <tr>
+                    <td colSpan={fields.length + 3}>Sin registros</td>
+                  </tr>
+                )}
               </tbody>
             </table>
           </div>

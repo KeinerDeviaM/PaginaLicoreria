@@ -95,36 +95,42 @@ export default function PaymentsPage() {
   }, [rows, search, statusFilter]);
 
   return (
-    <div className="page">
-      <div className="stack" style={{ justifyContent: 'space-between', alignItems: 'end', gap: 16, flexWrap: 'wrap' }}>
-        <div>
-          <h1>Pagos</h1>
-          <p className="small">Revisa pagos, valida referencias y aprueba o rechaza operaciones.</p>
-        </div>
+    <div className="page page-shell">
+      <section className="toolbar-card reveal-up">
+        <div className="page-header">
+          <div>
+            <div className="eyebrow">Validacion financiera</div>
+            <h1>Pagos</h1>
+            <p className="small">Revisa pagos, valida referencias y aprueba o rechaza operaciones.</p>
+          </div>
 
-        <div className="stack" style={{ gap: 8, flexWrap: 'wrap' }}>
-          <input
-            placeholder="Buscar por pedido o referencia"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            style={{ maxWidth: 260 }}
-          />
-          <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
-            <option value="TODOS">Todos</option>
-            <option value="PENDIENTE">Pendientes</option>
-            <option value="APROBADO">Aprobados</option>
-            <option value="RECHAZADO">Rechazados</option>
-          </select>
+          <div className="filter-toolbar">
+            <input
+              placeholder="Buscar por pedido o referencia"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              style={{ maxWidth: 260 }}
+            />
+            <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
+              <option value="TODOS">Todos</option>
+              <option value="PENDIENTE">Pendientes</option>
+              <option value="APROBADO">Aprobados</option>
+              <option value="RECHAZADO">Rechazados</option>
+            </select>
+          </div>
         </div>
-      </div>
+      </section>
 
       {msg && <div className={`notice ${msg.type}`}>{msg.text}</div>}
 
-      <div className="split" style={{ marginTop: 16 }}>
-        <section className="card">
-          <div className="stack" style={{ justifyContent: 'space-between', alignItems: 'center' }}>
-            <h3>Listado de pagos</h3>
-            <span className="badge">{filtered.length}</span>
+      <div className="split" style={{ marginTop: 0 }}>
+        <section className="table-card reveal-up">
+          <div className="table-header">
+            <div>
+              <h3>Listado de pagos</h3>
+              <p className="small">{filtered.length} operaciones visibles.</p>
+            </div>
+            <span className="result-pill">{filtered.length} pagos</span>
           </div>
 
           {loading ? (
@@ -138,7 +144,7 @@ export default function PaymentsPage() {
                   <tr>
                     <th>Pedido</th>
                     <th>Monto</th>
-                    <th>Método</th>
+                    <th>Metodo</th>
                     <th>Estado</th>
                     <th>Fecha</th>
                     <th></th>
@@ -170,58 +176,61 @@ export default function PaymentsPage() {
         </section>
 
         {selected && (
-          <section className="card">
-            <div className="stack" style={{ justifyContent: 'space-between', alignItems: 'center' }}>
-              <h3>Detalle del pago</h3>
+          <section className="card reveal-up reveal-delay-1">
+            <div className="page-header" style={{ alignItems: 'center' }}>
+              <div>
+                <h3>Detalle del pago</h3>
+                <p className="small">Confirmacion visual del monto, metodo y estado de revision.</p>
+              </div>
               <span className="badge" style={badgeStyle(selected.status)}>
                 {selected.status}
               </span>
             </div>
 
-            <div className="grid grid-2" style={{ marginTop: 10 }}>
-              <div className="card">
+            <div className="panel-grid" style={{ marginTop: 10 }}>
+              <div className="info-tile">
                 <div className="small">Pedido</div>
                 <strong>{selected.orderNumber || selected.orderId}</strong>
               </div>
-              <div className="card">
+              <div className="info-tile">
                 <div className="small">Monto</div>
                 <strong>{money(selected.amount)}</strong>
               </div>
-              <div className="card">
-                <div className="small">Método</div>
+              <div className="info-tile">
+                <div className="small">Metodo</div>
                 <strong>{selected.method || 'No disponible'}</strong>
               </div>
-              <div className="card">
+              <div className="info-tile">
                 <div className="small">Referencia</div>
                 <strong>{selected.reference || '—'}</strong>
               </div>
             </div>
 
-            <div className="card" style={{ marginTop: 16 }}>
+            <div className="timeline-card" style={{ marginTop: 16 }}>
               <div className="small">Historial visual</div>
-              <div style={{ marginTop: 10, display: 'flex', flexDirection: 'column', gap: 10 }}>
-                <div className="stack" style={{ gap: 10 }}>
-                  <span className="badge" style={badgeStyle('PENDIENTE')}>1</span>
+              <div className="timeline-list" style={{ marginTop: 12 }}>
+                <div className="timeline-item">
+                  <span className="timeline-dot">1</span>
                   <span>Pago registrado por el cliente</span>
                 </div>
 
                 {String(selected.status).toUpperCase() === 'PENDIENTE' && (
-                  <div className="stack" style={{ gap: 10 }}>
-                    <span className="badge" style={badgeStyle('PENDIENTE')}>2</span>
-                    <span>Pago pendiente de revisión</span>
+                  <div className="timeline-item">
+                    <span className="timeline-dot">2</span>
+                    <span>Pago pendiente de revision</span>
                   </div>
                 )}
 
                 {String(selected.status).toUpperCase() === 'APROBADO' && (
-                  <div className="stack" style={{ gap: 10 }}>
-                    <span className="badge" style={badgeStyle('APROBADO')}>3</span>
+                  <div className="timeline-item">
+                    <span className="timeline-dot">3</span>
                     <span>Pago aprobado</span>
                   </div>
                 )}
 
                 {String(selected.status).toUpperCase() === 'RECHAZADO' && (
-                  <div className="stack" style={{ gap: 10 }}>
-                    <span className="badge" style={badgeStyle('RECHAZADO')}>3</span>
+                  <div className="timeline-item">
+                    <span className="timeline-dot">3</span>
                     <span>Pago rechazado</span>
                   </div>
                 )}
@@ -229,7 +238,7 @@ export default function PaymentsPage() {
             </div>
 
             {String(selected.status || '').toUpperCase() === 'PENDIENTE' ? (
-              <div className="stack" style={{ gap: 10, marginTop: 16, flexWrap: 'wrap' }}>
+              <div className="stack" style={{ gap: 10, marginTop: 16 }}>
                 <button
                   className="btn btn-primary"
                   onClick={() => updateStatus(selected.paymentId || selected.id, 'APROBADO')}
@@ -250,7 +259,7 @@ export default function PaymentsPage() {
               </div>
             )}
 
-            <div className="stack" style={{ gap: 10, marginTop: 16, flexWrap: 'wrap' }}>
+            <div className="stack" style={{ gap: 10, marginTop: 16 }}>
               <Link className="btn btn-outline" to="/admin/orders">
                 Ir a pedidos
               </Link>

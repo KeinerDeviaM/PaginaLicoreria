@@ -1,4 +1,4 @@
-﻿import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { api } from '../api';
 import { getAuth } from '../auth';
@@ -76,79 +76,63 @@ export default function ProductPage() {
   const lowStock = Number(product.stock || 0) <= Number(product.minimumStock || 0);
 
   return (
-    <div className="container page">
+    <div className="container page page-shell">
       {msg && <div className={`notice ${msg.type}`}>{msg.text}</div>}
 
-      <div className="grid-2" style={{ alignItems: 'start', gap: 20 }}>
-        <section className="card">
-          <div
-            style={{
-              width: '100%',
-              height: 420,
-              borderRadius: 18,
-              overflow: 'hidden',
-              background: 'rgba(255,255,255,0.03)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center'
-            }}
-          >
-            {product.imageUrl ? (
-              <img
-                src={product.imageUrl}
-                alt={product.name}
-                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-              />
-            ) : (
-              <div style={{ fontSize: 80, fontWeight: 800, color: '#d4af37' }}>
-                {String(product.name || 'P').charAt(0)}
-              </div>
-            )}
-          </div>
+      <div className="page-header">
+        <div>
+          <div className="eyebrow">Detalle premium</div>
+          <h1>{product.name}</h1>
+          <p className="small">
+            {product.brandName} · {product.categoryName}
+          </p>
+        </div>
+        <Link className="btn btn-outline" to="/shop/products">
+          Volver al catalogo
+        </Link>
+      </div>
+
+      <div className="product-detail">
+        <section className="product-stage glass-card reveal-up">
+          {product.imageUrl ? (
+            <img src={product.imageUrl} alt={product.name} />
+          ) : (
+            <div className="product-placeholder">{String(product.name || 'P').charAt(0)}</div>
+          )}
         </section>
 
-        <section className="card">
-          <div className="small" style={{ marginBottom: 8 }}>
-            {product.brandName} · {product.categoryName}
-          </div>
-
-          <h1 style={{ marginBottom: 10 }}>{product.name}</h1>
-
-          <div className="stack" style={{ gap: 10, flexWrap: 'wrap', marginBottom: 14 }}>
+        <section className="product-detail-card reveal-up reveal-delay-1">
+          <div className="stack" style={{ gap: 10, marginBottom: 14 }}>
             <span className={`badge ${product.active ? 'success' : 'danger'}`}>
               {product.active ? 'Disponible' : 'Inactivo'}
             </span>
-
-            {lowStock && (
-              <span className="badge warning">
-                Stock bajo
-              </span>
-            )}
+            {lowStock && <span className="badge warning">Stock bajo</span>}
           </div>
 
-          <p style={{ marginBottom: 18 }}>
-            {product.description || 'Producto disponible en el catálogo.'}
+          <p className="small" style={{ fontSize: '0.98rem', lineHeight: 1.7 }}>
+            {product.description || 'Producto disponible en el catalogo.'}
           </p>
 
-          <div className="grid grid-2">
-            <div className="card">
-              <div className="small">Precio de venta</div>
-              <strong style={{ fontSize: 24 }}>{money(product.salePrice)}</strong>
-            </div>
+          <div className="inventory-banner">
+            Precio de venta: <strong className="price-tag">{money(product.salePrice)}</strong>
+          </div>
 
-            <div className="card">
+          <div className="product-meta-grid">
+            <div className="info-tile">
               <div className="small">Volumen</div>
               <strong>{product.volumeMl} ml</strong>
             </div>
-
-            <div className="card">
+            <div className="info-tile">
               <div className="small">Alcohol</div>
               <strong>{product.alcohol}°</strong>
             </div>
-
-            <div className="card">
+            <div className="info-tile">
               <div className="small">Stock actual</div>
               <strong>{product.stock}</strong>
+            </div>
+            <div className="info-tile">
+              <div className="small">Stock minimo</div>
+              <strong>{product.minimumStock || 0}</strong>
             </div>
           </div>
 
@@ -163,18 +147,14 @@ export default function ProductPage() {
             />
           </div>
 
-          <div className="stack" style={{ gap: 10, marginTop: 18, flexWrap: 'wrap' }}>
+          <div className="stack" style={{ gap: 10, marginTop: 18 }}>
             <button className="btn btn-primary" onClick={() => addToCart(false)}>
               Agregar al carrito
             </button>
 
-            <button className="btn btn-outline" onClick={() => addToCart(true)}>
+            <button className="btn btn-wine" onClick={() => addToCart(true)}>
               Comprar ahora
             </button>
-
-            <Link className="btn btn-outline" to="/shop/products">
-              Volver al catálogo
-            </Link>
           </div>
         </section>
       </div>

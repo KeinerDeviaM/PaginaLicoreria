@@ -97,21 +97,31 @@ export default function CartPage() {
     }
   }
 
-  if (loading) return <div className="container page"><div className="notice">Cargando carrito...</div></div>;
-
-  if (!cart?.items?.length) {
+  if (loading) {
     return (
-      <div className="container page">
-        <div className="card">
-          <h3>Tu carrito está vacío</h3>
-          <Link to="/shop/products" className="btn btn-primary">Ir al catálogo</Link>
+      <div className="page">
+        <div className="split">
+          <section className="card skeleton-box"></section>
+          <section className="card skeleton-box"></section>
         </div>
       </div>
     );
   }
 
+  if (!cart?.items?.length) {
+    return (
+      <div className="page">
+        <section className="card reveal-on-scroll" style={{ textAlign: 'center', padding: 28 }}>
+          <h2>Tu carrito está vacío</h2>
+          <p className="small" style={{ marginBottom: 18 }}>Agrega algunos productos para continuar con tu compra.</p>
+          <Link to="/shop/products" className="btn btn-primary">Ir al catálogo</Link>
+        </section>
+      </div>
+    );
+  }
+
   return (
-    <div className="container page">
+    <div className="page">
       <ConfirmModal
         open={confirmState.open}
         title={confirmState.mode === 'clear' ? 'Vaciar carrito' : 'Eliminar producto'}
@@ -127,13 +137,19 @@ export default function CartPage() {
         onCancel={() => setConfirmState({ open: false, mode: '', itemId: null, itemName: '' })}
       />
 
-      <div className="stack" style={{ justifyContent: 'space-between', alignItems: 'center' }}>
-        <h1>Carrito</h1>
-        <button className="btn btn-outline" onClick={askClear}>Vaciar</button>
-      </div>
+      <section className="card reveal-on-scroll hero" style={{ marginBottom: 18 }}>
+        <div className="stack" style={{ justifyContent: 'space-between', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
+          <div>
+            <div className="small" style={{ color: '#d4af37', marginBottom: 8 }}>Compra en progreso</div>
+            <h1>Tu carrito</h1>
+            <p className="small">Revisa cantidades, promociones y total antes de continuar.</p>
+          </div>
+          <button className="btn btn-outline" onClick={askClear}>Vaciar carrito</button>
+        </div>
+      </section>
 
       <div className="split">
-        <section className="card">
+        <section className="card reveal-on-scroll">
           <div className="table-wrap">
             <table>
               <thead>
@@ -143,7 +159,7 @@ export default function CartPage() {
                 {cart.items.map((item) => (
                   <tr key={item.itemId}>
                     <td>
-                      <div>{item.code} · {item.name}</div>
+                      <div style={{ fontWeight: 700 }}>{item.code} · {item.name}</div>
                       <div className="small" style={{ marginTop: 6 }}>
                         Stock disponible: {item.stockAvailable}
                       </div>
@@ -159,7 +175,7 @@ export default function CartPage() {
                       />
                     </td>
                     <td>{money(item.priceUnit)}</td>
-                    <td>{money(item.subtotal)}</td>
+                    <td><strong>{money(item.subtotal)}</strong></td>
                     <td><button className="btn btn-wine" onClick={() => askRemove(item)}>Quitar</button></td>
                   </tr>
                 ))}
@@ -168,16 +184,24 @@ export default function CartPage() {
           </div>
         </section>
 
-        <section className="card">
+        <section className="card reveal-on-scroll">
           <h3>Resumen</h3>
-          <p><strong>Subtotal:</strong> {money(cart.subtotal)}</p>
-          <p><strong>Descuento:</strong> -{money(cart.discountTotal)}</p>
-          <p><strong>Total:</strong> {money(cart.total)}</p>
+          <div className="small" style={{ marginBottom: 12 }}>Detalle del valor actual de tu compra.</div>
+
+          <div className="card" style={{ background: 'rgba(255,255,255,0.02)' }}>
+            <p><strong>Subtotal:</strong> {money(cart.subtotal)}</p>
+            <p><strong>Descuento:</strong> -{money(cart.discountTotal)}</p>
+            <p><strong>Total:</strong> <span style={{ color: '#d4af37', fontWeight: 800 }}>{money(cart.total)}</span></p>
+          </div>
 
           {cart.promotions?.length > 0 && (
             <>
-              <h4>Promociones aplicadas</h4>
-              {cart.promotions.map((p) => <div key={p.code} className="small">• {p.description} ({money(p.value)})</div>)}
+              <h4 style={{ marginTop: 14 }}>Promociones aplicadas</h4>
+              {cart.promotions.map((p) => (
+                <div key={p.code} className="small" style={{ marginBottom: 8 }}>
+                  • {p.description} ({money(p.value)})
+                </div>
+              ))}
             </>
           )}
 

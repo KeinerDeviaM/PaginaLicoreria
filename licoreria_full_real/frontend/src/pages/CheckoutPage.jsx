@@ -1,32 +1,33 @@
 ﻿import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { api } from '../api';
+import { useToast } from '../toast';
 
 const money = (value) => `$${Number(value || 0).toLocaleString('es-CO')}`;
 
 export default function CheckoutPage() {
   const navigate = useNavigate();
+  const { showToast } = useToast();
+
   const [cart, setCart] = useState(null);
   const [deliveryType, setDeliveryType] = useState('DOMICILIO');
   const [deliveryAddress, setDeliveryAddress] = useState('');
   const [notes, setNotes] = useState('');
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [message, setMessage] = useState(null);
 
   useEffect(() => {
     api.get('/cart')
       .then(({ data }) => setCart(data.data || data))
-      .catch((err) => setMessage({ type: 'error', text: err.response?.data?.message || 'No se pudo cargar el carrito.' }))
+      .catch((err) => showToast({ type: 'error', title: 'Error', text: err.response?.data?.message || 'No se pudo cargar el carrito.' }))
       .finally(() => setLoading(false));
-  }, []);
+  }, [showToast]);
 
   async function handleSubmit(e) {
     e.preventDefault();
-    setMessage(null);
 
     if (deliveryType === 'DOMICILIO' && !deliveryAddress.trim()) {
-      setMessage({ type: 'error', text: 'La dirección es obligatoria para entrega a domicilio.' });
+      showToast({ type: 'warning', title: 'Dirección requerida', text: 'La dirección es obligatoria para entrega a domicilio.' });
       return;
     }
 
@@ -37,32 +38,52 @@ export default function CheckoutPage() {
         deliveryAddress: deliveryType === 'DOMICILIO' ? deliveryAddress.trim() : '',
         notes: notes.trim()
       });
-      setMessage({ type: 'success', text: data.message || 'Pedido creado correctamente.' });
-      setTimeout(() => navigate(`/pay/${data.data.orderId}`), 800);
+
+      showToast({ type: 'success', title: 'Pedido creado', text: data.message || 'Pedido creado correctamente.' });
+      setTimeout(() => navigate(`/pay/${data.data.orderId}`), 700);
     } catch (err) {
-      setMessage({ type: 'error', text: err.response?.data?.message || 'No se pudo crear el pedido.' });
+      showToast({ type: 'error', title: 'No se pudo crear', text: err.response?.data?.message || 'No se pudo crear el pedido.' });
     } finally {
       setSaving(false);
     }
   }
 
-  if (loading) return <div className="container page"><div className="notice">Cargando checkout...</div></div>;
-  if (!cart?.items?.length) return <div className="container page"><div className="card"><h2>Tu carrito está vacío</h2><Link to="/shop/products" className="btn btn-primary">Ir al catálogo</Link></div></div>;
-
-  return (
-    <div className="container page">
-      <div className="stack" style={{ justifyContent: 'space-between', alignItems: 'end', gap: 16, flexWrap: 'wrap' }}>
-        <div>
-          <h1>Finalizar compra</h1>
-          <p className="small">Confirma tu pedido y completa los datos de entrega.</p>
+  if (loading) {
+    return (
+      <div className="page">
+        <div className="split">
+          <section className="card skeleton-box"></section>
+          <section className="card skeleton-box"></section>
         </div>
       </div>
+    );
+  }
 
-      {message && <div className={`notice ${message.type}`}>{message.text}</div>}
+  if (!cart?.items?.length) {
+    return (
+      <div className="page">
+        <section className="card reveal-on-scroll" style={{ textAlign: 'center', padding: 28 }}>
+          <h2>No hay productos para procesar</h2>
+          <p className="small" style={{ marginBottom: 18 }}>Tu carrito está vacío.</p>
+          <Link to="/shop/products" className="btn btn-primary">Ir al catálogo</Link>
+        </section>
+      </div>
+    );
+  }
 
-      <div className="grid-2" style={{ marginTop: 16 }}>
-        <section className="card">
-          <h3>Resumen del carrito</h3>
+  return (
+    <div className="page">
+      <section className="card reveal-on-scroll hero" style={{ marginBottom: 18 }}>
+        <div>
+          <div className="small" style={{ color: '#d4af37', marginBottom: 8 }}>Paso final</div>
+          <h1>Finalizar compra</h1>
+          <p className="small">Confirma tus datos de entrega antes de generar el pedido.</p>
+        </div>
+      </section>
+
+      <div className="split">
+        <section className="card reveal-on-scroll">
+          <h3>Resumen del pedido</h3>
           <div className="table-wrap">
             <table>
               <thead>
@@ -86,23 +107,16 @@ export default function CheckoutPage() {
             </table>
           </div>
 
-          <div style={{ marginTop: 16 }}>
+          <div className="card" style={{ marginTop: 16, background: 'rgba(255,255,255,0.02)' }}>
             <p><strong>Subtotal:</strong> {money(cart.subtotal)}</p>
             <p><strong>Descuento:</strong> -{money(cart.discountTotal)}</p>
-            <strong>Total: {money(cart.total)}</strong>
+            <p><strong>Total:</strong> <span style={{ color: '#d4af37', fontWeight: 800 }}>{money(cart.total)}</span></p>
           </div>
-
-          {cart.promotions?.length > 0 && (
-            <div style={{ marginTop: 12 }}>
-              {cart.promotions.map((p) => (
-                <div key={p.code} className="small">• {p.description} ({money(p.value)})</div>
-              ))}
-            </div>
-          )}
         </section>
 
-        <section className="card">
-          <h3>Datos del pedido</h3>
+        <section className="card reveal-on-scroll">
+          <h3>Datos de entrega</h3>
+
           <form onSubmit={handleSubmit}>
             <div className="form-group">
               <label>Tipo de entrega</label>
@@ -123,7 +137,7 @@ export default function CheckoutPage() {
             </div>
 
             <div className="form-group">
-              <label>Observación</label>
+              <label>Observaciones</label>
               <textarea
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
@@ -132,8 +146,10 @@ export default function CheckoutPage() {
               />
             </div>
 
-            <div className="stack" style={{ gap: 10 }}>
-              <button className="btn btn-primary" disabled={saving}>{saving ? 'Procesando...' : 'Confirmar pedido'}</button>
+            <div className="stack">
+              <button className="btn btn-primary" disabled={saving}>
+                {saving ? 'Procesando...' : 'Confirmar pedido'}
+              </button>
               <Link to="/cart" className="btn btn-outline">Volver al carrito</Link>
             </div>
           </form>

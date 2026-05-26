@@ -1,6 +1,7 @@
 ﻿import React, { useEffect, useMemo, useState } from 'react';
 import { api } from '../api';
 import { getAuth } from '../auth';
+import { hasCloudinaryConfig, uploadImageToCloudinary } from '../cloudinary';
 
 const initialForm = {
   categoryId: '',
@@ -25,6 +26,7 @@ function money(value) {
 export default function ProductsPage() {
   const { user } = getAuth();
   const canEdit = user?.role === 'ADMIN';
+  const cloudinaryReady = hasCloudinaryConfig();
 
   const [rows, setRows] = useState([]);
   const [categories, setCategories] = useState([]);
@@ -34,6 +36,9 @@ export default function ProductsPage() {
   const [editingId, setEditingId] = useState(null);
   const [msg, setMsg] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [imageFile, setImageFile] = useState(null);
+  const [uploadingImage, setUploadingImage] = useState(false);
+  const imageInputRef = React.useRef(null);
 
   const [search, setSearch] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('');
@@ -77,6 +82,12 @@ export default function ProductsPage() {
   function resetForm() {
     setEditingId(null);
     setForm(initialForm);
+    setImageFile(null);
+    setUploadingImage(false);
+
+    if (imageInputRef.current) {
+      imageInputRef.current.value = '';
+    }
   }
 
   function handleChange(e) {
@@ -104,8 +115,48 @@ export default function ProductsPage() {
     return '';
   }
 
+  function handleImageFileChange(e) {
+    const file = e.target.files?.[0] || null;
+    setImageFile(file);
+  }
+
+  async function uploadSelectedImage() {
+    if (!imageFile) {
+      setMsg({ type: 'error', text: 'Selecciona una imagen antes de subirla.' });
+      return;
+    }
+
+    try {
+      setUploadingImage(true);
+      const result = await uploadImageToCloudinary(imageFile);
+      setForm((prev) => ({ ...prev, imageUrl: result.url }));
+      setImageFile(null);
+
+      if (imageInputRef.current) {
+        imageInputRef.current.value = '';
+      }
+
+      setMsg({
+        type: 'success',
+        text: 'Imagen subida correctamente a Cloudinary.'
+      });
+    } catch (err) {
+      setMsg({
+        type: 'error',
+        text: err.message || 'No se pudo subir la imagen a Cloudinary.'
+      });
+    } finally {
+      setUploadingImage(false);
+    }
+  }
+
   async function submit(e) {
     e.preventDefault();
+
+    if (uploadingImage) {
+      setMsg({ type: 'warning', text: 'Espera a que termine la subida de la imagen.' });
+      return;
+    }
 
     const validationError = validateForm();
     if (validationError) {
@@ -192,24 +243,28 @@ export default function ProductsPage() {
   }, [rows, search, categoryFilter, brandFilter, statusFilter]);
 
   return (
-    <div className="page">
-      <div className="stack" style={{ justifyContent: 'space-between', alignItems: 'end', gap: 16, flexWrap: 'wrap' }}>
-        <div>
-          <h1>Productos</h1>
-          <p className="small">Gestiona el catálogo, precios, stock e información visual de cada producto.</p>
+    <div className="page page-shell">
+      <section className="toolbar-card reveal-up">
+        <div className="page-header">
+          <div>
+            <div className="eyebrow">Catalogo interno</div>
+            <h1>Productos</h1>
+            <p className="small">Gestiona el catalogo, precios, stock e informacion visual de cada producto.</p>
+          </div>
         </div>
-      </div>
+      </section>
 
       {msg && <div className={`notice ${msg.type}`}>{msg.text}</div>}
 
       <div className={canEdit ? 'split' : ''}>
         {canEdit && (
-          <section className="card">
+          <section className="card reveal-up">
             <h3>{editingId ? 'Editar producto' : 'Nuevo producto'}</h3>
+            <p className="small">Usa imagen, precio y niveles de stock para dejar el catalogo consistente.</p>
 
             <form onSubmit={submit}>
               <div className="form-group">
-                <label>Categoría</label>
+                <label>Categoria</label>
                 <select name="categoryId" value={form.categoryId} onChange={handleChange}>
                   <option value="">Selecciona</option>
                   {categories.filter((x) => x.active !== false).map((x) => (
@@ -238,23 +293,66 @@ export default function ProductsPage() {
                 </select>
               </div>
 
-              <div className="form-group">
-                <label>Código</label>
-                <input name="code" value={form.code} onChange={handleChange} />
+              <div className="grid grid-2">
+                <div className="form-group">
+                  <label>Codigo</label>
+                  <input name="code" value={form.code} onChange={handleChange} />
+                </div>
+
+                <div className="form-group">
+                  <label>Nombre</label>
+                  <input name="name" value={form.name} onChange={handleChange} />
+                </div>
               </div>
 
               <div className="form-group">
-                <label>Nombre</label>
-                <input name="name" value={form.name} onChange={handleChange} />
-              </div>
-
-              <div className="form-group">
-                <label>Descripción</label>
+                <label>Descripcion</label>
                 <textarea name="description" value={form.description} onChange={handleChange} />
               </div>
 
               <div className="form-group">
-                <label>URL de imagen</label>
+                <label>Imagen del producto</label>
+
+                {!cloudinaryReady && (
+                  <div className="notice warning">
+                    Configura `frontend/.env` con Cloudinary para habilitar la subida directa.
+                  </div>
+                )}
+
+                <input
+                  ref={imageInputRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageFileChange}
+                />
+
+                <div className="small" style={{ marginTop: 8 }}>
+                  {cloudinaryReady
+                    ? 'Selecciona una foto y pulsa "Subir imagen a Cloudinary".'
+                    : 'Mientras configuras Cloudinary puedes seguir pegando una URL manualmente.'}
+                </div>
+
+                {imageFile && (
+                  <div className="small" style={{ marginTop: 8 }}>
+                    Archivo seleccionado: {imageFile.name}
+                  </div>
+                )}
+
+                <div className="stack" style={{ marginTop: 10 }}>
+                  <button
+                    type="button"
+                    className="btn btn-outline"
+                    onClick={uploadSelectedImage}
+                    disabled={!cloudinaryReady || !imageFile || uploadingImage}
+                    style={{ opacity: !cloudinaryReady || !imageFile || uploadingImage ? 0.65 : 1 }}
+                  >
+                    {uploadingImage ? 'Subiendo imagen...' : 'Subir imagen a Cloudinary'}
+                  </button>
+                </div>
+              </div>
+
+              <div className="form-group">
+                <label>URL final de imagen</label>
                 <input
                   name="imageUrl"
                   value={form.imageUrl}
@@ -264,12 +362,12 @@ export default function ProductsPage() {
               </div>
 
               {form.imageUrl && (
-                <div className="card" style={{ marginBottom: 14 }}>
+                <div className="info-tile" style={{ marginBottom: 14 }}>
                   <div className="small" style={{ marginBottom: 8 }}>Vista previa</div>
                   <img
                     src={form.imageUrl}
                     alt="Vista previa"
-                    style={{ width: '100%', maxHeight: 220, objectFit: 'cover', borderRadius: 12 }}
+                    style={{ width: '100%', maxHeight: 220, objectFit: 'cover', borderRadius: 14 }}
                     onError={(e) => {
                       e.currentTarget.style.display = 'none';
                     }}
@@ -304,19 +402,23 @@ export default function ProductsPage() {
                 </div>
 
                 <div className="form-group">
-                  <label>Stock mínimo</label>
+                  <label>Stock minimo</label>
                   <input type="number" name="minimumStock" value={form.minimumStock} onChange={handleChange} />
                 </div>
               </div>
 
               <div className="stack">
-                <button className="btn btn-primary">
-                  {editingId ? 'Actualizar producto' : 'Crear producto'}
+                <button className="btn btn-primary" disabled={uploadingImage} style={{ opacity: uploadingImage ? 0.65 : 1 }}>
+                  {uploadingImage
+                    ? 'Esperando imagen...'
+                    : editingId
+                      ? 'Actualizar producto'
+                      : 'Crear producto'}
                 </button>
 
                 {editingId && (
                   <button type="button" className="btn btn-outline" onClick={resetForm}>
-                    Cancelar edición
+                    Cancelar edicion
                   </button>
                 )}
               </div>
@@ -324,20 +426,23 @@ export default function ProductsPage() {
           </section>
         )}
 
-        <section className="card">
-          <div className="stack" style={{ justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 10 }}>
-            <h3>Listado de productos</h3>
+        <section className="table-card reveal-up reveal-delay-1">
+          <div className="table-header">
+            <div>
+              <h3>Listado de productos</h3>
+              <p className="small">{filtered.length} resultados segun filtros activos.</p>
+            </div>
 
-            <div className="stack" style={{ gap: 8, flexWrap: 'wrap' }}>
+            <div className="filter-toolbar">
               <input
-                placeholder="Buscar por nombre o código"
+                placeholder="Buscar por nombre o codigo"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 style={{ maxWidth: 260 }}
               />
 
               <select value={categoryFilter} onChange={(e) => setCategoryFilter(e.target.value)}>
-                <option value="">Todas las categorías</option>
+                <option value="">Todas las categorias</option>
                 {categories.map((x) => (
                   <option key={x.id} value={x.id}>{x.name}</option>
                 ))}
@@ -365,9 +470,9 @@ export default function ProductsPage() {
               <table>
                 <thead>
                   <tr>
-                    <th>Código</th>
+                    <th>Codigo</th>
                     <th>Nombre</th>
-                    <th>Categoría</th>
+                    <th>Categoria</th>
                     <th>Marca</th>
                     <th>Compra</th>
                     <th>Venta</th>

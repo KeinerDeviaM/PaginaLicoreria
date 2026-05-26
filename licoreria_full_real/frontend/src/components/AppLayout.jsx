@@ -1,127 +1,104 @@
-import React from 'react';
-import { NavLink, Outlet, useNavigate } from 'react-router-dom';
-import { clearAuth, getAuth } from '../auth';
+﻿import React from 'react';
+import { Link, NavLink, Outlet } from 'react-router-dom';
+import { getAuth, clearAuth } from '../auth';
 
 export function PublicLayout() {
   const { user } = getAuth();
-  const navigate = useNavigate();
+
+  function logout() {
+    clearAuth();
+    window.location.href = '/login';
+  }
 
   return (
-    <>
-      <header className="nav">
-        <div className="nav-inner">
-          <NavLink to="/" className="brand">
-            <span className="brand-badge">L</span>
-            <div>
-              <div>Licorería Pro</div>
-              <div className="small">Tienda + inventario + ventas</div>
-            </div>
-          </NavLink>
-
-          <nav className="nav-links">
-            <NavLink to="/" className="nav-link">Inicio</NavLink>
-            <NavLink to="/shop/products" className="nav-link">Catálogo</NavLink>
+    <div>
+      <header>
+        <div className="container" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 16, padding: '14px 0', flexWrap: 'wrap' }}>
+          <div className="stack" style={{ gap: 10, alignItems: 'center', flexWrap: 'wrap' }}>
+            <Link to="/" className="btn btn-outline">Inicio</Link>
+            <Link to="/shop/products" className="btn btn-outline">Catálogo</Link>
             {user?.role === 'CLIENTE' && (
               <>
-                <NavLink to="/cart" className="nav-link">Carrito</NavLink>
-                <NavLink to="/orders" className="nav-link">Mis pedidos</NavLink>
-                <NavLink to="/invoices" className="nav-link">Mis facturas</NavLink>
-                <NavLink to="/profile" className="nav-link">Mi perfil</NavLink>
+                <Link to="/cart" className="btn btn-outline">Carrito</Link>
+                <Link to="/orders" className="btn btn-outline">Mis pedidos</Link>
               </>
             )}
-          </nav>
+          </div>
 
-          <div className="stack">
-            {!user ? (
+          <div className="stack" style={{ gap: 10, alignItems: 'center', flexWrap: 'wrap' }}>
+            {user ? (
               <>
-                <NavLink to="/login" className="btn btn-outline">Ingresar</NavLink>
-                <NavLink to="/register" className="btn btn-primary">Crear cuenta</NavLink>
+                <span className="small">{user.firstName} {user.lastName} · {user.role}</span>
+                <Link to="/profile" className="btn btn-outline">Perfil</Link>
+                <button className="btn btn-wine" onClick={logout}>Salir</button>
               </>
             ) : (
               <>
-                <div className="small" style={{ alignSelf: 'center' }}>{user.firstName} {user.lastName} · {user.role}</div>
-                {user.role === 'ADMIN' && <NavLink to="/admin/dashboard" className="btn btn-outline">Panel admin</NavLink>}
-                {user.role === 'TRABAJADOR' && <NavLink to="/worker/dashboard" className="btn btn-outline">Panel trabajador</NavLink>}
-                <button className="btn btn-danger" onClick={() => { clearAuth(); navigate('/login'); }}>Salir</button>
+                <Link to="/login" className="btn btn-outline">Ingresar</Link>
+                <Link to="/register" className="btn btn-primary">Registrarse</Link>
               </>
             )}
           </div>
         </div>
       </header>
 
-      <main>
+      <main className="container" style={{ paddingTop: 18 }}>
         <Outlet />
       </main>
-    </>
+    </div>
   );
 }
 
 export function InternalLayout({ role }) {
   const { user } = getAuth();
-  const navigate = useNavigate();
-  const base = role === 'ADMIN' ? '/admin' : '/worker';
 
-  const menu = role === 'ADMIN'
-    ? [
-        ['Dashboard', `${base}/dashboard`],
-        ['Usuarios', `${base}/users`],
-        ['Trabajadores', `${base}/workers`],
-        ['Productos', `${base}/products`],
-        ['Categorías', `${base}/categories`],
-        ['Marcas', `${base}/brands`],
-        ['Proveedores', `${base}/suppliers`],
-        ['Movimientos', `${base}/movements`],
-        ['Alertas', `${base}/alerts`],
-        ['Pedidos', `${base}/orders`],
-        ['Pagos', `${base}/payments`],
-        ['Facturas', `${base}/invoices`],
-        ['Notificaciones', `${base}/notifications`],
-        ['Mi perfil', '/profile']
-      ]
-    : [
-        ['Dashboard', `${base}/dashboard`],
-        ['Usuarios', `${base}/users`],
-        ['Productos', `${base}/products`],
-        ['Movimientos', `${base}/movements`],
-        ['Alertas', `${base}/alerts`],
-        ['Pedidos', `${base}/orders`],
-        ['Pagos', `${base}/payments`],
-        ['Facturas', `${base}/invoices`],
-        ['Mi perfil', '/profile']
-      ];
+  function logout() {
+    clearAuth();
+    window.location.href = '/login';
+  }
+
+  const isAdmin = role === 'ADMIN';
+  const base = isAdmin ? '/admin' : '/worker';
 
   return (
-    <>
-      <header className="nav">
-        <div className="nav-inner">
-          <div className="brand">
-            <span className="brand-badge">{role === 'ADMIN' ? 'A' : 'T'}</span>
-            <div>
-              <div>{role === 'ADMIN' ? 'Panel Admin' : 'Panel Trabajador'}</div>
-              <div className="small">{user?.firstName} {user?.lastName}</div>
-            </div>
-          </div>
-
-          <div className="stack">
-            <button className="btn btn-outline" onClick={() => navigate('/')}>Ver tienda</button>
-            <button className="btn btn-danger" onClick={() => { clearAuth(); navigate('/login'); }}>Salir</button>
-          </div>
+    <div style={{ minHeight: '100vh', display: 'grid', gridTemplateColumns: '280px 1fr' }}>
+      <aside style={{ padding: 18 }}>
+        <div className="card" style={{ marginBottom: 14 }}>
+          <h3 style={{ marginBottom: 6 }}>{isAdmin ? 'Panel Admin' : 'Panel Trabajador'}</h3>
+          <div className="small">{user?.firstName} {user?.lastName}</div>
         </div>
-      </header>
 
-      <div className="layout">
-        <aside className="sidebar">
-          <div className="menu">
-            {menu.map(([label, href]) => (
-              <NavLink key={href} to={href}>{label}</NavLink>
-            ))}
+        <nav className="card">
+          <div style={{ display: 'grid', gap: 8 }}>
+            <NavLink to={`${base}/dashboard`} className="btn btn-outline">Dashboard</NavLink>
+            <NavLink to={`${base}/products`} className="btn btn-outline">Productos</NavLink>
+            <NavLink to={`${base}/orders`} className="btn btn-outline">Pedidos</NavLink>
+            <NavLink to={`${base}/payments`} className="btn btn-outline">Pagos</NavLink>
+            <NavLink to={`${base}/invoices`} className="btn btn-outline">Facturas</NavLink>
+            <NavLink to={`${base}/movements`} className="btn btn-outline">Movimientos</NavLink>
+            <NavLink to={`${base}/alerts`} className="btn btn-outline">Alertas</NavLink>
+
+            {isAdmin && (
+              <>
+                <NavLink to={`${base}/users`} className="btn btn-outline">Usuarios</NavLink>
+                <NavLink to={`${base}/workers`} className="btn btn-outline">Trabajadores</NavLink>
+                <NavLink to={`${base}/categories`} className="btn btn-outline">Categorías</NavLink>
+                <NavLink to={`${base}/brands`} className="btn btn-outline">Marcas</NavLink>
+                <NavLink to={`${base}/suppliers`} className="btn btn-outline">Proveedores</NavLink>
+                <NavLink to={`${base}/notifications`} className="btn btn-outline">Notificaciones</NavLink>
+              </>
+            )}
           </div>
-        </aside>
 
-        <main className="main">
-          <Outlet />
-        </main>
-      </div>
-    </>
+          <div style={{ marginTop: 14 }}>
+            <button className="btn btn-wine" onClick={logout}>Salir</button>
+          </div>
+        </nav>
+      </aside>
+
+      <main style={{ padding: 18 }}>
+        <Outlet />
+      </main>
+    </div>
   );
 }

@@ -1,55 +1,58 @@
 ﻿import React, { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { api } from '../api';
+import { useToast } from '../toast';
 
 const money = (value) => `$${Number(value || 0).toLocaleString('es-CO')}`;
 
 export default function PaymentPage() {
   const { orderId } = useParams();
+  const { showToast } = useToast();
+
   const [order, setOrder] = useState(null);
   const [payment, setPayment] = useState(null);
   const [method, setMethod] = useState('TRANSFERENCIA');
   const [reference, setReference] = useState('');
   const [amount, setAmount] = useState('');
-  const [message, setMessage] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    api.get(`/orders/${orderId}`)
-      .then(({ data }) => {
-        const orderData = data.data || data;
+    Promise.all([
+      api.get(`/orders/${orderId}`),
+      api.get(`/payments/order/${orderId}`).catch(() => ({ data: null }))
+    ])
+      .then(([orderRes, paymentRes]) => {
+        const orderData = orderRes.data.data || orderRes.data;
         setOrder(orderData);
         setAmount(orderData.total || 0);
+        setPayment(paymentRes.data?.data || paymentRes.data || null);
       })
-      .catch((err) => setMessage({ type: 'error', text: err.response?.data?.message || 'No se pudo cargar el pedido.' }));
-
-    api.get(`/payments/order/${orderId}`)
-      .then(({ data }) => setPayment(data.data || data))
-      .catch(() => {});
-  }, [orderId]);
+      .catch((err) => showToast({ type: 'error', title: 'Error', text: err.response?.data?.message || 'No se pudo cargar el pedido.' }))
+      .finally(() => setLoading(false));
+  }, [orderId, showToast]);
 
   async function submit(e) {
     e.preventDefault();
-    setMessage(null);
 
     if (!order) {
-      setMessage({ type: 'error', text: 'Pedido no cargado.' });
+      showToast({ type: 'error', title: 'Pedido no cargado', text: 'No se pudo cargar el pedido.' });
       return;
     }
 
     const numericAmount = Number(amount || 0);
 
     if (!Number.isFinite(numericAmount) || numericAmount <= 0) {
-      setMessage({ type: 'error', text: 'Ingresa un monto válido.' });
+      showToast({ type: 'warning', title: 'Monto inválido', text: 'Ingresa un monto válido.' });
       return;
     }
 
     if (numericAmount !== Number(order.total)) {
-      setMessage({ type: 'error', text: 'El monto debe coincidir exactamente con el total del pedido.' });
+      showToast({ type: 'warning', title: 'Monto incorrecto', text: 'El monto debe coincidir exactamente con el total del pedido.' });
       return;
     }
 
     if (method !== 'EFECTIVO' && !reference.trim()) {
-      setMessage({ type: 'error', text: 'La referencia es obligatoria para este método.' });
+      showToast({ type: 'warning', title: 'Referencia requerida', text: 'La referencia es obligatoria para este método.' });
       return;
     }
 
@@ -61,41 +64,60 @@ export default function PaymentPage() {
         amount: numericAmount
       });
       setPayment(data.data || data);
-      setMessage({ type: 'success', text: 'Pago registrado. Queda pendiente de confirmación.' });
+      showToast({ type: 'success', title: 'Pago registrado', text: 'Pago registrado. Queda pendiente de confirmación.' });
     } catch (err) {
-      setMessage({ type: 'error', text: err.response?.data?.message || 'No se pudo registrar el pago.' });
+      showToast({ type: 'error', title: 'No se pudo registrar', text: err.response?.data?.message || 'No se pudo registrar el pago.' });
     }
   }
 
+  if (loading) {
+    return (
+      <div className="page">
+        <section className="card skeleton-box"></section>
+      </div>
+    );
+  }
+
   return (
-    <div className="container page">
-      <h1>Pago del pedido</h1>
-      {message && <div className={`notice ${message.type}`}>{message.text}</div>}
+    <div className="page">
+      <section className="card reveal-on-scroll hero" style={{ marginBottom: 18 }}>
+        <div>
+          <div className="small" style={{ color: '#d4af37', marginBottom: 8 }}>Pago del pedido</div>
+          <h1>Completa tu pago</h1>
+          <p className="small">Registra tu pago y espera la confirmación del equipo interno.</p>
+        </div>
+      </section>
 
       {!order ? (
-        <div className="notice">Cargando pedido...</div>
+        <section className="card reveal-on-scroll">
+          <h3>No se encontró el pedido</h3>
+        </section>
       ) : (
-        <div className="grid-2" style={{ marginTop: 16 }}>
-          <section className="card">
+        <div className="split">
+          <section className="card reveal-on-scroll">
             <h3>Resumen del pedido</h3>
-            <p><strong>Número:</strong> {order.orderNumber}</p>
-            <p><strong>Total:</strong> {money(order.total)}</p>
-            <p><strong>Estado:</strong> {order.status}</p>
-            <p><strong>Entrega:</strong> {order.deliveryType}</p>
-            <div className="stack" style={{ gap: 10 }}>
+            <div className="card" style={{ background: 'rgba(255,255,255,0.02)' }}>
+              <p><strong>Número:</strong> {order.orderNumber}</p>
+              <p><strong>Total:</strong> <span style={{ color: '#d4af37', fontWeight: 800 }}>{money(order.total)}</span></p>
+              <p><strong>Estado:</strong> {order.status}</p>
+              <p><strong>Entrega:</strong> {order.deliveryType}</p>
+            </div>
+
+            <div className="stack" style={{ marginTop: 14 }}>
               <Link to="/orders" className="btn btn-outline">Volver a mis pedidos</Link>
             </div>
           </section>
 
-          <section className="card">
+          <section className="card reveal-on-scroll">
             <h3>Registrar pago</h3>
+
             {payment ? (
-              <>
+              <div className="card" style={{ background: 'rgba(255,255,255,0.02)' }}>
                 <p><strong>Método:</strong> {payment.method}</p>
                 <p><strong>Monto:</strong> {money(payment.amount)}</p>
                 <p><strong>Referencia:</strong> {payment.reference || '—'}</p>
                 <p><strong>Estado:</strong> {payment.status}</p>
-              </>
+              </div>
             ) : (
               <form onSubmit={submit}>
                 <div className="form-group">
@@ -113,6 +135,7 @@ export default function PaymentPage() {
                     value={reference}
                     onChange={(e) => setReference(e.target.value)}
                     disabled={method === 'EFECTIVO'}
+                    placeholder="Número de referencia"
                   />
                 </div>
 
@@ -126,7 +149,7 @@ export default function PaymentPage() {
                   />
                 </div>
 
-                <button className="btn btn-primary" disabled={!order}>Registrar pago</button>
+                <button className="btn btn-primary">Registrar pago</button>
               </form>
             )}
           </section>
